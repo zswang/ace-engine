@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-template.js"></script>
+		<title>ace template examples</title>
+		<style type="text/css">
+			td{
+				border: solid 1px red;
+			}
+		</style>
+	</head>
+	<body>
+		<h3>默认经过html编码，防止xss漏洞</h3>
+		<div>
+			<script id="t1" type="text/template">
+				#{this}
+			</script>
+		</div>
+		<h3>也可以使用非编码方式</h3>
+		<div>
+			<script id="t2" type="text/template">
+				!#{this}
+			</script>
+		</div>
+		<script>
+			(function() {
+				var html = "<table><tr><td>Ace Engine</td><td>Template</td></tr></table>";
+
+				var t1 = document.getElementById("t1");
+				t1.parentNode.innerHTML = AceTemplate.format('t1', html);
+
+				var t2 = document.getElementById("t2");
+				t2.parentNode.innerHTML = AceTemplate.format('t2', html);
+			})();
+		</script>
+	</body>
+</html>

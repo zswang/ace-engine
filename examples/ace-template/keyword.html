@@ -1,0 +1,92 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-template.js"></script>
+		<title>ace template examples</title>
+		<style type="text/css">
+			.keyword{
+				color: red;
+			}
+		</style>
+	</head>
+	<body>
+		<h3>今日电影排行榜</h3>
+		<div>
+			输入关键字：<input id="k1" value="" />
+		</div>
+		<ul>
+			<script id="t1" type="text/template">
+				for (var i = 0; i < this.length; i++) {
+					var item = this[i];
+					<li>
+						<b>第#{i + 1}名</b>
+						<a href="#{item.url}" target="blank">!#{helper.keyword(item.title)}</a>
+						if (item.isnew) {
+							<span>new!</span>
+						}
+					</li>
+				}
+			</script>
+		</ul>
+		<script>
+			(function() {
+				// from http://top.baidu.com/buzz.php?p=movie
+				var movieList = [
+					{
+						title: "建党伟业",
+						url: "http://top.baidu.com/detail.php?b=26&w=%BD%A8%B5%B3%CE%B0%D2%B5"
+					},
+					{
+						title: "变形金刚3",
+						url: "http://top.baidu.com/detail.php?b=26&w=%B1%E4%D0%CE%BD%F0%B8%D53",
+						isnew: true
+					},
+					{
+						title: "功夫熊猫2",
+						url: "http://top.baidu.com/detail.php?b=26&w=%B9%A6%B7%F2%D0%DC%C3%A82"
+					},
+					{
+						title: "加勒比海盗4",
+						url: "http://top.baidu.com/detail.php?b=26&w=%BC%D3%C0%D5%B1%C8%BA%A3%B5%C14"
+					},
+					{
+						title: "3d肉蒲团",
+						url: "http://top.baidu.com/detail.php?b=26&w=3d%C8%E2%C6%D1%CD%C5"
+					}
+				];			
+
+				var query;
+				
+				/**
+				 * 高亮关键词
+				 * @param {String} text 字符串原文
+				 * @return {String} 返回标记关键词后的HTML字符串
+				 */
+				function keyword(text) {
+					var r = AceTemplate.format("#{this}", text); // 原文做html编码
+					if (query) {
+						var t = AceTemplate.format("#{this}", query); // 搜索关键字做html编码
+						r = r.replace(t, AceTemplate.format('<b class="keyword">!#{this}</b>', t));
+					}
+					return r;
+				}
+				
+				var t1 = document.getElementById("t1");
+				var parent = t1.parentNode;
+
+				var k1 = document.getElementById("k1");
+
+				function queryChange() {
+					if (query === k1.value) return; // 值没改变
+					query = k1.value;
+					parent.innerHTML = AceTemplate.format('t1', movieList, {
+						keyword: keyword
+					});
+				};
+				
+				k1.onkeyup = queryChange;
+				queryChange();
+			})();
+		</script>
+	</body>
+</html>

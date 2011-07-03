@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../scripts/ace-template.js"></script>
+        <title>ace template examples</title>
+    </head>
+    <body>
+        <h3>地区</h3>
+        <ul>
+            <script id="t1" type="text/html">
+            	for (var i = 0; i < this.length; i++) {
+					var item = this[i];
+	                <li>
+		                <a href="#{this.url}" target="_blank"><b>#{item.name}</b></a>
+	                	if (item.items && item.items.length) {
+	                		<ul>
+	                			!#{helper.format('t1', item.items)}
+							</ul>
+	                	}
+					</li>
+				}
+            </script>
+        </ul>
+        <script>
+            (function(){
+            	// from http://top.baidu.com/buzz.php?p=movie
+            	var citys = [{
+            		name: "北京市",
+            		url: "http://baike.baidu.com/view/2431.htm",
+            		items: [{
+            			name: "朝阳区",
+            			url: "http://baike.baidu.com/view/138836.htm"
+            		},
+					{
+            			name: "海淀区",
+            			url: "http://baike.baidu.com/view/138838.htm"
+            		}]
+            	}, {
+            		name: "山西省",
+            		items: [{
+            			name: "太原市",
+            			url: "http://baike.baidu.com/view/23736.htm",
+            			items: [{
+            				name: "迎泽区",
+            				url: "http://baike.baidu.com/view/556105.htm",
+            				items: [{
+            					name: "大关帝庙",
+            					url: "http://baike.baidu.com/view/1947078.htm"
+            				}]
+            			}, {
+            				name: "杏花岭区",
+            				url: "http://baike.baidu.com/view/90492.htm"
+            			}, {
+            				name: "万柏林区",
+            				url: "http://baike.baidu.com/view/498669.htm"
+            			}]
+            		}, {
+            			name: "大同市",
+            			url: "http://baike.baidu.com/view/28133.htm"
+            		}]
+            	}];
+            	
+            	var t1 = document.getElementById("t1");
+            	t1.parentNode.innerHTML = AceTemplate.format('t1', citys);
+            })();
+        </script>
+    </body>
+</html>
