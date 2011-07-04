@@ -24,6 +24,15 @@
 			}
 		</script>
 		
+		<script id="t2" type="text/template">
+			function quot(text) {
+				return '"' + text.replace(/"|\\/g, "\\$&") + '"';
+			}
+			for (var p in this) {
+				<div>#{p}: #{quot(this[p])}</div>
+			}
+		</script>
+
 		<script>
 			(function() {
 				var log = document.getElementById("log");
@@ -54,7 +63,14 @@
 					},
 					{
 						input: ["t1"],
-						output: "\t\t\t\t<b>无</b>\n"
+						output: "				<b>无</b>\n"
+					},
+					{
+						input: [document.getElementById("t2"), {
+							name: "size",
+							value: "12"
+						}],
+						output: '				<div>name: &quot;size&quot;</div>\n				<div>value: &quot;12&quot;</div>\n'
 					}
 				];
 				
