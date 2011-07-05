@@ -23,16 +23,17 @@
 				<b>无</b>
 			}
 		</script>
-		
 		<script id="t2" type="text/template">
-			function quot(text) {
-				return '"' + text.replace(/"|\\/g, "\\$&") + '"';
-			}
-			for (var p in this) {
-				<div>#{p}: #{quot(this[p])}</div>
-			}
+			<input type="text" value="#{helper.quot(title)}"/>
 		</script>
-
+		<script id="t3" type="text/template">
+			<ul>
+			for (var i = 0; i < this.length; i++) {
+				<li>#{this[i]}</li>
+			}
+			</ul>
+		</script>
+		
 		<script>
 			(function() {
 				var log = document.getElementById("log");
@@ -66,11 +67,20 @@
 						output: "				<b>无</b>\n"
 					},
 					{
-						input: [document.getElementById("t2"), {
-							name: "size",
-							value: "12"
+						input: ["t2", {
+							title: "hello world"
+						}, {
+							quot: function(text) {
+								return "[" + text + "]";
+							}
 						}],
-						output: '				<div>name: &quot;size&quot;</div>\n				<div>value: &quot;12&quot;</div>\n'
+						output: '			<input type="text" value="[hello&nbsp;world]"/>'
+					},
+					{
+						input: ["t3", [
+							"a", "b", "c"
+						]],
+						output: "			<ul>\n				<li>a</li>\n				<li>b</li>\n				<li>c</li>\n			</ul>"
 					}
 				];
 				
@@ -78,7 +88,7 @@
 				for (var i = 0; i < list.length; i++) {
 					var item = list[i];
 					try {
-						var output = AceTemplate.format(item.input[0], item.input[1]);
+						var output = AceTemplate.format(item.input[0], item.input[1], item.input[2]);
 						if (output == item.output) {
 							message.push("√" + i + "输出结果符合预期。");
 						} else {
