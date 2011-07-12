@@ -6,9 +6,9 @@
 
 生成结果：
 function anonymous(_output_, _encode_, helper) {
-    with(this) {
-        _output_.push("\t\t\t\u5D4C\u5957\u7684\"", typeof title == "undefined" ? "" : _encode_(title), "\"");
-    }
+	with(this) {
+		_output_.push("\t\t\t\u5D4C\u5957\u7684\"", typeof title == "undefined" ? "" : _encode_(title), "\"");
+	}
 }
 ----------------------
 模板样本：
@@ -33,20 +33,20 @@ function anonymous(_output_, _encode_, helper) {
 
 生成结果：
 function anonymous(_output_, _encode_, helper) {
-    with(this) {
-        _output_.push("\t\t\t<div>\n\t\t\t\t\u8BED\u8A00(", _encode_(helper.language), ")\n\t\t\t\t<a href=\"#\">\n\t\t\t\t\tprint\n\t\t\t\t</a>\n\t\t\t\t", helper.format("demo2", this), "\n");
-        switch (status) {
-        case "edit":
-            _output_.push("\t\t\t\t\t\t<input type=\"text\" value=\"", typeof title == "undefined" ? "" : _encode_(title), "\"/><input type=\"button\" value=\"\u786E\u5B9A\"/>\n");
-            break;
-        case "normal":
-            _output_.push("\t\t\t\t\t\t<span>", typeof title == "undefined" ? "" : _encode_(title), "</span><input type=\"button\" value=\"\u7F16\u8F91\"/>\n");
-            break;
-        default:
-            ;
-        }
-        _output_.push("\t\t\t\t<span>", typeof html == "undefined" ? "" : html, "</span>\n\t\t\t</div>");
-    }
+	with(this) {
+		_output_.push("\t\t\t<div>\n\t\t\t\t\u8BED\u8A00(", _encode_(helper.language), ")\n\t\t\t\t<a href=\"#\">\n\t\t\t\t\tprint\n\t\t\t\t</a>\n\t\t\t\t", helper.format("demo2", this), "\n");
+		switch (status) {
+		case "edit":
+			_output_.push("\t\t\t\t\t\t<input type=\"text\" value=\"", typeof title == "undefined" ? "" : _encode_(title), "\"/><input type=\"button\" value=\"\u786E\u5B9A\"/>\n");
+			break;
+		case "normal":
+			_output_.push("\t\t\t\t\t\t<span>", typeof title == "undefined" ? "" : _encode_(title), "</span><input type=\"button\" value=\"\u7F16\u8F91\"/>\n");
+			break;
+		default:
+			;
+		}
+		_output_.push("\t\t\t\t<span>", typeof html == "undefined" ? "" : html, "</span>\n\t\t\t</div>");
+	}
 }
 */
 	
@@ -75,7 +75,7 @@ var AceTemplate = AceTemplate || {};
 				dom.value += text + "\n";
 			}
 			*/
-			window.console && console.log(text)			
+			window.console && console.log(text)
 		}
 	};
 	/* Debug End */
@@ -83,15 +83,15 @@ var AceTemplate = AceTemplate || {};
 	var htmlDecodeDict = { "quot": '"', "lt": "<", "gt": ">", "amp": "&", "nbsp": " " };
 	var htmlEncodeDict = { '"': "quot", "<": "lt", ">": "gt", "&": "amp", " ": "nbsp" };
 	var lib = {
-        /**
-         * 通过id获得DOM对象
-         * @param {String} id
-         */
-        g: function(id){
-            if (typeof id != "string") 
-                return id;
-            return document.getElementById(id);
-        },
+		/**
+		 * 通过id获得DOM对象
+		 * @param {String} id
+		 */
+		g: function(id){
+			if (typeof id != "string") 
+				return id;
+			return document.getElementById(id);
+		},
 		/**
 		 * HTML解码
 		 * @param {String} html
@@ -212,7 +212,7 @@ var AceTemplate = AceTemplate || {};
 				reader = this.register(id, element);
 			} else {
 				reader = analyse(id);
-			} 			
+			}
 		}
 		var output = [];
 		reader.call(data || "", output, lib.encodeHTML, helper);
@@ -246,7 +246,7 @@ var AceTemplate = AceTemplate || {};
 			}
 			target = lib.elementText(target);
 		}
-		return readerCaches[id] = analyse(target);	
+		return readerCaches[id] = analyse(target);
 	};
 	
 	/**
