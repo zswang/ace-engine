@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-event.js"></script>
+		<title>ace event examples</title>
+	</head>
+	<body>
+		<div id="toolBar">
+			<button event-click="click save">click save</button>
+			<span event-dblclick="double click open">double click open</span>
+			<button cmd="cmd save">cmd save</button>
+			<span down="down open">down open</span>
+		</div>
+		<div>
+			<button id="buttonFire">fire</button>
+		</div>
+		<script>
+			(function() {
+				var handler = AceEvent.on("toolBar", function(command, element, e) {
+					alert(command);
+				});
+				document.getElementById("buttonFire").onclick = function(){
+					AceEvent.fire(handler, "fire");
+				};
+			})();
+		</script>
+	</body>
+</html>

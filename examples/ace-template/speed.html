@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-template.js"></script>
+		<title>ace template examples</title>
+		<style type="text/css">
+			td{
+				border: solid 1px red;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="text/templage" id="acetemplate">
+			for (var i = 0; i < list.length; i++){
+				if (i < 100){
+					<li>小 于100 这里是第 !#{i} 列：!#{list[i]}1
+					2</li>
+				}
+				else {
+					<li>不小于100 这里是第!#{i} 列：!#{list[i]}</li>
+				}
+			}
+		</script>
+		<div id="result"></div>
+		<script>
+			(function() {
+		        var num = 50000;
+		        var list = [];
+		        var array = ["红桃", "方块", "梅花", "黑桃"];
+		        for (var i = 0; i < num; i++) {
+		        	list.push(array[i % 4]);
+		        }
+		        
+		        var tick = new Date;
+		        var html = String(AceTemplate.format("acetemplate", {
+		        	list: list
+		        }));
+		        tick = new Date - tick;
+				
+		        document.getElementById("result").innerHTML = 
+					AceTemplate.format("时间消耗:#{this}", tick);
+			})();
+		</script>	
+	</body>
+</html>
