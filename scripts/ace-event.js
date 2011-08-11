@@ -110,8 +110,9 @@ var AceEvent = AceEvent || {};
 	 * 注册事件
 	 * @param {String|Element} element 事件对象id
 	 * @param {Function} callback 回调函数
-	 * 	{String} operate 动作
-	 *  {Event} e 事件信息
+	 * 	{String} command 命令字符串
+	 * 	{Element} element 响应的dom
+	 * 	{Event} e 事件信息
 	 * @param {String|Array} events 绑定事件列表
 	 * @return {Number} 返回事件句柄
 	 */
@@ -178,7 +179,7 @@ var AceEvent = AceEvent || {};
 	
 	/**
 	 * 注销事件
-	 * @param {String} handler 事件对象句柄
+	 * @param {Number} handler 事件对象句柄
 	 */
 	AceEvent.un = function(handler){
 		var eventItem = eventDict[handler];
