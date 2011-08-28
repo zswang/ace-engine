@@ -33,6 +33,11 @@
 			}
 			</ul>
 		</script>
+		<script id="t4" type="text/template">
+			N / A
+			A, B, C
+			12.34
+		</script>
 		
 		<script>
 			(function() {
@@ -81,6 +86,10 @@
 							"a", "b", "c"
 						]],
 						output: "			<ul>\n				<li>a</li>\n				<li>b</li>\n				<li>c</li>\n			</ul>"
+					},
+					{
+						input: ["t4", {}],
+						output: "			N / A\n			A, B, C\n			12.34"
 					}
 				];
 				
