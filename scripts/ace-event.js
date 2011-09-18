@@ -1,6 +1,6 @@
 var AceEvent = AceEvent || {};
 
-(function(){
+void function(exports){
 	/**
 	 * Ace Engine Event
 	 * 一套简单的事件代理系统
@@ -116,7 +116,7 @@ var AceEvent = AceEvent || {};
 	 * @param {String|Array} events 绑定事件列表
 	 * @return {Number} 返回事件句柄
 	 */
-	AceEvent.on = function(element, callback, events){
+	exports.on = function(element, callback, events){
 		if (!callback) return;
 		element = lib.g(element);
 		if (!element) return;
@@ -172,7 +172,7 @@ var AceEvent = AceEvent || {};
 	 * @param {Element} element 事件Dom对象
 	 * @param {Event} e 事件
 	 */
-	AceEvent.fire = function(handler, command, element, e){
+	exports.fire = function(handler, command, element, e){
 		var eventItem = eventDict[handler];
 		eventItem && eventItem.callback(command, element, e);
 	};
@@ -181,7 +181,7 @@ var AceEvent = AceEvent || {};
 	 * 注销事件
 	 * @param {Number} handler 事件对象句柄
 	 */
-	AceEvent.un = function(handler){
+	exports.un = function(handler){
 		var eventItem = eventDict[handler];
 		if (!eventItem) return;
 		for (var eventName in eventItem.events) {
@@ -189,4 +189,4 @@ var AceEvent = AceEvent || {};
 		}
 		delete eventDict[handler];
 	};
-})();
+}(AceEvent);

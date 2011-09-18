@@ -52,7 +52,7 @@ function anonymous(_output_, _encode_, helper) {
 	
 var AceTemplate = AceTemplate || {};
 
-(function(){
+(function(exports){
 	/**
 	 * Ace Engine Template
 	 * 一套基于HTML和JS语法自由穿插的模板系统
@@ -195,7 +195,7 @@ var AceTemplate = AceTemplate || {};
 	 * @param {Object} data 格式化的数据，默认为空字符串
 	 * @param {Object} helper 附加数据(默认为模板对象)
 	 */
-	AceTemplate.format = function(id, data, helper){
+	exports.format = function(id, data, helper){
 		if (!id) return "";
 		var reader, element;
 		if (typeof id == "object" && id.tagName) { // 如果是Dom对象
@@ -224,7 +224,7 @@ var AceTemplate = AceTemplate || {};
 	 * @param {String} id 模板ID
 	 * @param {Element|String} target 模板对象或者是模板字符串，如果没有则默认获取id对应的DOM对象
 	 */
-	AceTemplate.register = function(id, target){
+	exports.register = function(id, target){
 		if (!arguments.length && !registerAll) { // 无参数并且没有注册过
 			registerAll = true;
 			var scripts = document.getElementsByTagName("script");
@@ -253,7 +253,7 @@ var AceTemplate = AceTemplate || {};
 	 * 注销模板
 	 * @param {String} id 模板ID
 	 */
-	AceTemplate.unregister = function(id){
+	exports.unregister = function(id){
 		delete readerCaches[id];
 	};
-})();
+})(AceTemplate);
