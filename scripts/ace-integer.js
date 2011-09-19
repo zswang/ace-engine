@@ -56,7 +56,7 @@ void function(exports){
 	//console.log(compare("0a1", "ab1"));
 	
 	/**
-	 * 无限进制的加法
+	 * 无限整数加法
 	 * @param {String} a 整数1
 	 * @param {String} b 整数2
 	 * @param {Number} scale 进制 2-64
@@ -168,7 +168,7 @@ void function(exports){
 	//console.log(charDigit("7", 10, 2)); // 111
 	
 	/**
-	 * 进制间的转换
+	 * 无限整数进制间的转换
 	 * @param {String} n 整数
 	 * @param {Number} from 来源进制 2-64
 	 * @param {Number} to 目标进制 2-64
@@ -196,7 +196,7 @@ void function(exports){
 	
 	
 	/**
-	 * 进制减法
+	 * 无限整数减法
 	 * @param {String} a 减数
 	 * @param {String} b 被减数
 	 * @param {Number} scale 进制 2-64
@@ -227,7 +227,7 @@ void function(exports){
 	//console.log(sub("101", "10", 2)); // 11
 	
 	/**
-	 * 无限进制整除
+	 * 无限整数除法
 	 * @param {String} a 除数
 	 * @param {String} b 被除数
 	 * @param {Number} scale 进制 2-64
@@ -254,6 +254,13 @@ void function(exports){
 	}
 	//console.log(div("32", "3", 10)); // ["10", "2"]
 	
+	/**
+	 * 无限整数除法，如果是循环小数，则在循环部分加上括号
+	 * @param {String} a 除数
+	 * @param {String} b 被除数
+	 * @param {Number} scale 进制 2-64
+	 * @return {Array} 返回[商数,余数]
+	 */
 	function div2(a, b, scale){
 		scale = scale || 10;
 		if (scale < 2 || scale > 64) return;
