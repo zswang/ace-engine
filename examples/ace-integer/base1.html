@@ -3,14 +3,34 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<script src="../../scripts/ace-integer.js"></script>
 		<title>ace integer examples</title>
+		<style type="text/css">
+			#log{
+				width: 700px;
+				height: 400px;
+			}
+		</style>
 	</head>
 	<body>
 		<textarea id="log"></textarea>
 		<script>
-			void function() {
-				var log = document.getElementById('log');
-				log.value += 'AceInteger.add("102", "11", 3)=' + AceInteger.add("102", "11", 3) + "\n";
-			}();
+        void function(){
+        	var commands = [
+				'AceInteger.add("10101", "111", 2) /*二进制加法*/', 
+				'AceInteger.sub("10101", "111", 2) /*二进制减法*/', 
+				'AceInteger.digit("10201212111200101110", 3, 5) /*三进制转换成五进制*/', 
+				'AceInteger.power("37", 30) /*37的30次方*/', 
+				'AceInteger.mul("1234", "21", 7) /*七进制乘法*/', 
+				'AceInteger.div("1234", "21", 7) /*七进制除法(商和余数)*/', 
+				'AceInteger.div2("1234", "21", 7) /*七进制除法(无限小数)*/', 
+				'AceInteger.div2("1", "3") /*十进制看得明白些*/'
+			];
+        	var lines = [];
+        	for (var i = 0; i < commands.length; i++) {
+        		var command = commands[i];
+        		lines.push(command + ' = ' + eval("(" + command + ")"));
+        	};
+        	log.value = lines.join("\n");
+        }();
 		</script>
 	</body>
 </html>
