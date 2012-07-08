@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-template-simple.js"></script>
+		<title>ace template simple examples</title>
+	</head>
+	<body>
+		<div id="panel" style="display:inline;"></div>
+		<script id="templateVML" type="text/template">
+<v:shape style="width:1;height:1;" coordsize="1,1">
+	<v:stroke color="666666"/>
+	<v:path arrowok="true" v="m#{startPos} l#{lineFrom},#{lineTo} e"/>
+</v:shape>
+		</script>
+		<script id="templateSVG" type="text/template">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+	<path fill="none" stroke="#666666" d="M#{startPos}L#{lineFrom},#{lineTo}"/>
+</svg>
+		</script>
+		<script>
+			void function(){
+				var data = {
+					startPos: [0, 0],
+					lineFrom: [10, 0],
+					lineTo: [10, 10]
+				};
+				var template = document.getElementById('template' + (document.all ? 'VML' : 'SVG')).innerHTML;
+				var rander = AceTemplate.rander(template);
+				if (document.all){
+					document.createStyleSheet().cssText = 'v\\:*{behavior:url(#default#VML);}';
+				}
+				var t = 5;
+				setInterval(function(){
+					document.getElementById('panel').innerHTML = rander(data);
+					if (data.lineTo[1] >= 200) t = -5;
+					if (data.lineTo[1] <= 0) t = 5;
+					data.lineTo[1] += t;
+				}, 100);
+			}();
+		</script>
+	</body>
+</html>

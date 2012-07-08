@@ -1,0 +1,61 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-editor.js"></script>
+		<title>ace editor examples</title>
+		<style>
+			textarea{
+				width: 500px;
+				height: 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<span></span>
+		<div><textarea id="editor">0123456789</textarea></div>
+		<script>
+		function g(id){
+			return document.getElementById(id);
+		}
+		void function(){
+			var esperanto = [
+				['cx','\u0109'],  ['gx','\u011D'],
+				['hx','\u0125'],  ['jx','\u0135'],
+				['sx','\u015D'],  ['ux','\u016D'],
+
+				['cX','\u0109'],  ['gX','\u011D'],
+				['hX','\u0125'],  ['jX','\u0135'],
+				['sX','\u015D'],  ['uX','\u016D'],
+
+				['Cx','\u0108'],  ['Gx','\u011C'],
+				['Hx','\u0124'],  ['Jx','\u0134'],
+				['Sx','\u015C'],  ['Ux','\u016C'],
+
+				['CX','\u0108'],  ['GX','\u011C'],
+				['HX','\u0124'],  ['JX','\u0134'],
+				['SX','\u015C'],  ['UX','\u016C']
+			];
+			var dict = {};
+			for (var i = 0; i < esperanto.length; i++){
+				dict[esperanto[i][0]] = esperanto[i][1];
+			}
+			
+			g('editor').onkeyup = function(e){
+				e = e || event;
+				switch(e.keyCode){
+					case 88: //x
+						var start = AceEditor.getSelectStart(this);
+						if (start < 2) break;
+						var key = this.value.replace(/\r\n?/g, '\n').substr(start - 2, 2),
+							value = dict[key];
+						if (value){
+							AceEditor.setSelectRange(this, [start - 2, start]);
+							AceEditor.setSelectText(this, value);
+						}
+						break;
+				}
+			};
+		}();
+		</script>
+	</body>
+</html>

@@ -39,6 +39,11 @@
 			12.34
 		</script>
 		
+		<script id="t5" type="text/template">
+			http://www.baidu.com
+			mailto:xxx@baidu.com
+			name:(#{name})
+		</script>
 		<script>
 			(function() {
 				var log = document.getElementById("log");
@@ -52,10 +57,22 @@
 						output: "<b>b</b>"
 					},
 					{
+						input: ["#{this}", 0],
+						output: "0"
+					},
+					{
+						input: ["#{this}", false],
+						output: "false"
+					},
+					{
 						input: ["#{title}#{size}", {
 							title: "t"
 						}],
 						output: "t"
+					},
+					{
+						input: ["#{this}", 0],
+						output: "0"
 					},
 					{
 						input: ["#{title}#{size + 2}", {
@@ -90,6 +107,17 @@
 					{
 						input: ["t4", {}],
 						output: "			N / A\n			A, B, C\n			12.34"
+					},
+					{
+						input: ["t5", { name : 'yyy' }],
+						output: "			http://www.baidu.com\n			mailto:xxx@baidu.com\n			name:(yyy)"
+					},
+					{
+						input: ["#{title}\n<\script>String.prototype.trim = function() {}<\/script>\n#{value}<\style type=\"text/css\">body{background:none;}<\/style>", {
+							title: 'script',
+							value: 'style'
+						}],
+						output: "script\n<\script>String.prototype.trim = function() {}<\/script>\nstyle<\style type=\"text/css\">body{background:none;}<\/style>"
 					}
 				];
 				

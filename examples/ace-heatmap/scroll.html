@@ -1,0 +1,58 @@
+<head>
+	<script src="../../scripts/ace-heatmap.js"></script>
+	<style>
+		#canvas2{
+			border: 1px solid #ccc;
+			position: fixed;
+			left: 0;
+			top: 0;
+		}
+		#scrollBox{
+			position: relative;
+			width: 300px;
+			height: 500px;
+			overflow: auto;
+			
+		}
+		#back{
+			width: 10000px;
+			height: 10000px;
+			background-image: url("http://ww4.sinaimg.cn/large/589d32f5tw1dl3mtnb9sqj.jpg");
+		}
+	</style>
+</head>
+<body>
+	<div id="scrollBox">
+		<div id="back"></div>
+		<canvas id="canvas2" width="300" height="500"></canvas>
+	</div>
+	<div>
+		<label><input id="papercut" type="checkbox"/>papercut</label>
+	</div>
+	<script>
+		var data = [];
+		var count = 10000;
+		for (var i = 0; i < count; i++){
+			data.push([~~(Math.random() * count), ~~(Math.random() * count), ~~(Math.random() * count)]);
+		}
+
+		function bind(canvas){
+			var heatmap = AceHeatmap.createHeatmap({
+				canvas: canvas
+			});
+			heatmap.draw(data)
+			document.getElementById('scrollBox').onscroll = function(e){
+				e = e || event;
+				var target = e.target || e.srcElement;
+				heatmap.setOrigin([target.scrollLeft, target.scrollTop]);
+			};
+			document.getElementById('papercut').checked = false;
+			document.getElementById('papercut').onclick = function(e){
+				e = e || event;
+				var target = e.target || e.srcElement;
+				heatmap.setPapercut(target.checked);
+			}
+		}
+		bind(document.getElementById('canvas2'));
+	</script>
+</body>

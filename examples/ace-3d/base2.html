@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8 />
+	<meta name="author" content="http://weibo.com/zswang" />
+	<title>Demo</title>
+	<script src="../../scripts/ace-3d.js"></script>
+	<script src="lib/js3d.js"></script>
+	<script>
+var canvas;
+var vR = 0.03;
+var pposx = 0;
+var pposy = 0
+var posx = 0;
+var posy = 0;
+var down = false;
+
+function mmove(e) {
+	if (down == false) return;
+	var currx = 0;
+	var curry = 0;
+	if (!e) var e = window.event;
+	if (e.pageX || e.pageY) 	{
+		currx = e.pageX;
+		curry = e.pageY;
+	}
+	else if (e.clientX || e.clientY) 	{
+		currx = e.clientX + document.body.scrollLeft
+			+ document.documentElement.scrollLeft;
+		curry = e.clientY + document.body.scrollTop
+			+ document.documentElement.scrollTop;
+	}
+	canvas.matrix = canvas.rotateY((currx-posx)/200);
+	pposx = posx;
+	pposy= posy;
+	posx = currx;
+	posy = curry;
+}
+function mdown(e) {
+	down = true;
+	vR = 0;
+	if (!e) var e = window.event;
+	if (e.pageX || e.pageY) 	{
+		posx = e.pageX;
+		posy = e.pageY;
+	}
+	else if (e.clientX || e.clientY) 	{
+		posx = e.clientX + document.body.scrollLeft
+			+ document.documentElement.scrollLeft;
+		posy = e.clientY + document.body.scrollTop
+			+ document.documentElement.scrollTop;
+	}
+}
+function mup(e) {
+	down = false;
+	var currx = 0;
+	var curry = 0;
+	if (!e) var e = window.event;
+	if (e.pageX || e.pageY){
+		currx = e.pageX;
+		curry = e.pageY;
+	}
+	else if (e.clientX || e.clientY){
+		currx = e.clientX + document.body.scrollLeft
+			+ document.documentElement.scrollLeft;
+		curry = e.clientY + document.body.scrollTop
+			+ document.documentElement.scrollTop;
+	}
+	
+	vR = (currx-pposx) / 200;
+}
+function loop() {
+	canvas.matrix = canvas.rotateY(vR);
+	canvas.paint();
+	setTimeout("loop();", 30);
+}
+function drawHelix() {
+	var m = scale(100, 20, 100, identity());
+	var curve = [
+		[0, 0, 0.5], 
+		[0.5, 0.2, 0.3],
+		[1, 2, 3],
+		[1, 5, 1]
+	];
+	var count = 53;
+	var tightness = 3;
+	for (var t = 0; t < count; t++) {
+		var point = Ace3D.bezier(curve, t / count);
+		var p = canvas.addPoint(point[0],
+			point[1],
+			point[2],
+			"*",
+			m);
+	}
+}
+
+function init() {
+	canvas = new JS3D("canvas", -20);
+	canvas.matrix = identity();
+	canvas.matrix = canvas.translate(canvas.width / 2, 0, -200);
+	drawHelix(identity());
+	loop();
+}
+	</script>
+</head>
+<body onLoad="init();">
+	<div id="canvas" style="
+		position: absolute;
+		left: 10px;
+		top: 80px;
+		width: 500px;
+		height: 480px;
+		border: 1px blue outset;
+		background-color: blue;
+		cursor:move;"
+		onMouseDown="mdown(event);"
+		onMouseUp="mup(event);"
+		onMouseMove="mmove(event);"
+		></div>
+
+</body>

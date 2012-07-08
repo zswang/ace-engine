@@ -1,0 +1,139 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-tree.js"></script>
+		<script src="../../scripts/ace-template.js"></script>
+		<script src="../../scripts/ace-event.js"></script>
+		<title>ace tree examples</title>
+	</head>
+	<body>
+		<ul>
+			<script id="addressTemplate" type="text/template">
+			<li>
+				if (helper.getStatus("modify")){
+					<input type="text" value="#{text}"/><button cmd="ok">确定</button><button cmd="cancel">取消</button>
+				} else {
+					#{text}<button cmd="edit">编辑</button><button cmd="remove">删除</button>
+				}
+				if (this['source']){
+					if (helper.getStatus("loaded")){
+						<span>loaded</span>
+					} else if (helper.getStatus("loading")){
+						<span>loading...</span>
+					} else {
+						<button cmd="load">加载</button>
+					}
+				}
+				<ul data-type="childs"></ul>
+			</li>
+			</script>
+		</ul>
+		<script>
+var http = {
+	get: function(url, callback){
+		var xmlhttp = /^u/.test(typeof XMLHttpRequest) ?
+			new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function(){
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+				callback(eval(xmlhttp.responseText));
+			}
+		}
+		xmlhttp.open('GET', url, true);
+		xmlhttp.send(null);
+	}
+}
+void function(){
+	var address = [{
+		"text": "北京市",
+		"nodes": [{
+			"text": "3东城区"
+		}, {
+			"text": "2西城区"
+		}, {
+			"text": "1崇文区"
+		}, {
+			"text": "4宣武区"
+		}, {
+			"text": "5朝阳区"
+		}]
+	},
+	{
+		"text": "天津市",
+		"nodes": [{
+			"text": "2和平区"
+		}, {
+			"text": "3河东区"
+		}, {
+			"text": "1河西区"
+		}, {
+			"text": "4南开区"
+		}]
+	},
+	{
+		"text": "海外",
+		"source": "other.js"
+	}];
+	
+	var addressTemplate = AceTree.create({
+		fieldIdentifier: 'text', // 指定标识字段名
+		fieldChilds: 'nodes', // 指定子节点字段名
+		statusClasses: /^(modify|focus|hover|select|expand)$/, // 用于类名的状态规则
+		parent: document.getElementById('addressTemplate').parentNode, // 指定渲染容器
+		onreader: function(node){ // 指定渲染方法
+			return AceTemplate.format('addressTemplate', node.data, node);
+		},
+		oninit: function(tree){ // 初始化处理
+			// 绑定容器事件
+			tree.eventHandler = AceEvent.on(tree.parent, function(command, element, e){
+				var node = tree.node4target(element);
+				node && tree.oncommand(command, node, e);
+			});
+		},
+		oncommand: function(command, node){ // 接受容器事件
+			switch(command){
+				case 'remove': // 收到移除命令 // 由cmd="remove"指定
+					node.remove();
+					break;
+				case 'edit':
+					node.setStatus('modify', true);
+					var element = document.getElementById(node.did); // did为节点dom对应id
+					var input = element.getElementsByTagName('input')[0];
+					input.focus();
+					break;
+				case 'ok':
+					var element = document.getElementById(node.did); // did为节点dom对应id
+					var input = element.getElementsByTagName('input')[0];
+					node.updateData({text: input.value});
+					node.setStatus('modify', false);
+					break;
+				case 'cancel':
+					node.setStatus('modify', false);
+					break;
+				case 'load':
+					if (node.getStatus('loading') || node.getStatus('loaded')){
+						// 正在加载或加载中
+						break;
+					}
+					node.setStatus('loading', true);
+					http.get(node.data.source, function(data){
+						setTimeout(function(){
+							node.setStatus('loading', false, true); // 最后一个参数指定不刷新
+							node.setStatus('loaded', true, true);
+							node.loadChilds(data);
+						}, 3000);
+					});
+					break;
+			}
+		}
+	});
+	
+	addressTemplate.loadChilds(address);
+	addressTemplate.each(function(node){
+		if (node.data.text == '3东城区'){
+			console.log(node.data);
+		}
+	});
+}();
+		</script>
+	</body>
+</html>

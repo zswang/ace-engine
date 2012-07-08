@@ -1,0 +1,102 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-tree.js"></script>
+		<script src="../../scripts/ace-template.js"></script>
+		<script src="../../scripts/ace-event.js"></script>
+		<title>ace tree examples</title>
+	</head>
+	<body>
+		<ul>
+			<script id="movieTemplate" type="text/template">
+			<li>
+				<a href="#{url}" target="_blank">#{title}:#{url}</a>
+				<button cmd="insert">插入子节点</button>
+				<button cmd="append">追加子节点</button>
+				<ul data-type="childs"></ul>
+			</li>
+			</script>
+		</ul>
+		<div id="toolbar">
+			<button cmd="append">向后添加</button>
+			<button cmd="insert">向前添加</button>
+		</div>
+		<script>
+void function() {
+	var movieList = [
+		{
+			title: "建党伟业",
+			url: "http://top.baidu.com/detail.php?b=26&w=%BD%A8%B5%B3%CE%B0%D2%B5"
+		},
+		{
+			title: "变形金刚3",
+			url: "http://top.baidu.com/detail.php?b=26&w=%B1%E4%D0%CE%BD%F0%B8%D53",
+			isnew: true
+		},
+		{
+			title: "功夫熊猫2",
+			url: "http://top.baidu.com/detail.php?b=26&w=%B9%A6%B7%F2%D0%DC%C3%A82"
+		},
+		{
+			title: "加勒比海盗4",
+			url: "http://top.baidu.com/detail.php?b=26&w=%BC%D3%C0%D5%B1%C8%BA%A3%B5%C14"
+		},
+		{
+			title: "3d肉蒲团",
+			url: "http://top.baidu.com/detail.php?b=26&w=3d%C8%E2%C6%D1%CD%C5"
+		}
+	];
+	
+	var movieTree = AceTree.create({
+		fieldIdentifier: 'title',
+		parent: document.getElementById('movieTemplate').parentNode,
+		onreader: function(node){
+			return AceTemplate.format('movieTemplate', node.data);
+		},
+		oninit: function(tree){ // 初始化处理
+			// 绑定容器事件
+			tree.eventHandler = AceEvent.on(tree.parent, function(command, element, e){
+				var node = tree.node4target(element);
+				node && tree.oncommand(command, node, e);
+			});
+		},
+		oncommand: function(command, node){ // 接受容器事件
+			switch(command){
+				case 'insert':
+					node.insertChild({
+						title: +new Date,
+						url: "###insert"
+					});
+					break;
+				case 'append':
+					node.appendChild({
+						title: +new Date,
+						url: "###append"
+					});
+					break;
+			}
+		}
+	});
+	
+	movieTree.loadChilds(movieList);
+	
+	AceEvent.on('toolbar', function(command){
+		switch(command){
+			case 'insert':
+				movieTree.insertChild({
+					title: +new Date,
+					url: "###insert"
+				});
+				break;
+			case 'append':
+				movieTree.appendChild({
+					title: +new Date,
+					url: "###append"
+				});
+				break;
+		}
+	});
+}();
+		</script>
+	</body>
+</html>

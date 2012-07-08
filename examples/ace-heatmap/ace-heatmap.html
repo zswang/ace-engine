@@ -1,0 +1,31 @@
+<head>
+	<script src="../../scripts/ace-heatmap.js"></script>
+</head>
+<body>
+	<canvas id="canvas2" width="300" height="500"></canvas>
+	<canvas id="canvas3" width="1000" height="1000"></canvas>
+	<script>
+		var data = [];
+		var count = 10000;
+		for (var i = 0; i < count; i++){
+			data.push([~~(Math.random() * count), ~~(Math.random() * count), ~~(Math.random() * count)]);
+		}
+
+		function bind(canvas){
+			var heatmap = AceHeatmap.createHeatmap({
+				canvas: canvas
+			});
+			heatmap.draw(data)
+			var downPos = [];
+			canvas.onmousedown = function(e){
+				downPos = [e.clientX, e.clientY];
+			}
+			canvas.onmouseup = function(e){
+				var pos = [e.clientX, e.clientY];
+				heatmap.moveOrigin([pos[0] - downPos[0], pos[1] - downPos[1]]);
+			}
+		}
+		bind(document.getElementById('canvas2'));
+		bind(document.getElementById('canvas3'));
+	</script>
+</body>

@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-editor.js"></script>
+		<title>ace editor examples</title>
+		<style>
+			textarea{
+				width: 500px;
+				height: 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<div><textarea id="editor">0123456789</textarea></div>
+		<div>select text:<input type="text" id="txtSelectText"/></div>
+		<div>select start:<input type="text" id="txtSelectStart"/></div>
+		<div>select end:<input type="text" id="txtSelectEnd"/></div>
+		<div><input type="button" id="btnSetSelectRange" value="setSelectRange"/></div>
+		<div><input type="button" id="btnSetSelectText" value="setSelectText"/></div>
+		<script>
+		function g(id){
+			return document.getElementById(id);
+		}
+
+		void function(){
+			g('editor').onmouseup = g('editor').onkeyup = function(e){
+				g('txtSelectText').value = AceEditor.getSelectText(this).replace(/\n/g, " ");
+				g('txtSelectStart').value = AceEditor.getSelectStart(this);
+				g('txtSelectEnd').value = AceEditor.getSelectEnd(this);
+			};
+			g('btnSetSelectRange').onclick = function(){
+				AceEditor.setSelectRange(g('editor'), [
+					g('txtSelectStart').value,
+					g('txtSelectEnd').value
+				]);
+			};
+			g('btnSetSelectText').onclick = function(){
+				AceEditor.setSelectRange(g('editor'), [
+					g('txtSelectStart').value,
+					g('txtSelectEnd').value
+				]);
+				AceEditor.setSelectText(
+					g('editor'), 
+					g('txtSelectText').value
+				);
+			};
+		}();
+		</script>
+	</body>
+</html>

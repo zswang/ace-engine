@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8 />
+	<meta name="author" content="http://weibo.com/zswang" />
+	<title>ace 3d examples</title>
+	<script src="../../scripts/ace-3d.js"></script>
+	<style>
+		#canvas{
+			border: solid 1px #ccc;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="600" height="500"><span>Browser does not support the canvas.</span></canvas>
+	<script>
+void function(){
+	var canvas = document.getElementById('canvas');
+	if (canvas.getElementsByTagName('span')[0].offsetWidth != 0) return;
+	var context = canvas.getContext('2d');
+	function random(max){
+		return Math.random() * max;
+	}
+	var curve = [
+		[random(canvas.width), random(canvas.height), random(100)], 
+		[random(canvas.width), random(canvas.height), random(100)],
+		[random(canvas.width), random(canvas.height), random(100)],
+		[random(canvas.width), random(canvas.height), random(100)]
+	];
+	var count = 20;
+	for (var i = 0; i < count; i++){
+		var point = Ace3D.bezier(curve, i / count);
+		context.fillStyle = "red";
+		var zoom = 10 * (point[2] / 100);
+		context.rect(point[0], point[1], 10 + zoom, 10 + zoom);
+		context.stroke();
+	}
+}();
+	</script>
+</body>
+</html>

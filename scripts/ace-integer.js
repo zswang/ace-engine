@@ -1,4 +1,4 @@
-var AceInteger = AceInteger || {};
+var AceInteger = typeof exports == "undefined" ? AceInteger || {} : exports;
 
 void function(exports){
 	/**

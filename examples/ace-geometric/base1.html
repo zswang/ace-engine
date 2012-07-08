@@ -1,0 +1,19 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-geometric.js"></script>
+		<title>ace geometric examples</title>
+	</head>
+	<body>
+		<canvas id="canvas"><span id="error">Your browser does not support the canvas</span></canvas>
+		<script>
+			void function(){
+				var error = document.getElementById('error');
+				if (error.offsetWidth || error.offsetHeight) return;
+				
+				var canvas = document.getElementById('canvas'),
+					context = canvas.getContext('2d');
+			}();
+		</script>
+	</body>
+</html>
