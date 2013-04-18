@@ -1,110 +1,205 @@
 var AceGeometric = /^u/.test(typeof exports) ? AceGeometric || {} : exports;
 void function(exports){
-	/**
-	 * Ace Engine Geometric
-	 * ¼¸ºÎº¯Êı
-	 * @see http://code.google.com/p/ace-engine/wiki/AceGeometric
-	 * @author Íõ¼¯ğÀ(wangjihu,http://weibo.com/zswang)
-	 * @version 1.0
-	 * @copyright www.baidu.com
-	 */
-	
-	var 
-		math = Math, cos = math.cos, sin = math.sin, PI = math.PI, PI2 = PI * 2, min = math.min, max = math.max,
-		atan = math.atan, sqrt = math.sqrt, pow = math.pow;
+    /**
+     * Ace Engine Geometric
+     * å‡ ä½•å‡½æ•°
+     * @see http://code.google.com/p/ace-engine/wiki/AceGeometric
+     * @author ç‹é›†é¹„(wangjihu,http://weibo.com/zswang)
+     * @version 1.0
+     * @copyright www.baidu.com
+     */
+    
+    var 
+        math = Math,
+        cos = math.cos,
+        sin = math.sin,
+        PI = math.PI,
+        PI2 = PI * 2,
+        min = math.min,
+        max = math.max,
+        atan = math.atan,
+        sqrt = math.sqrt,
+        pow = math.pow;
+        
+    /**
+     * è·å–æ­£è´Ÿç¬¦å·
+     * @param {Number} x æ•°å€¼
+     * @return è¿”å›xçš„ç¬¦å·
+     */
+    function sign(x){
+        return x == 0 ? 0 : (x < 0 ? -1 : 1);
+    }
+    
+    /**
+     * è®¡ç®—ç‚¹åˆ°ç‚¹ä¹‹é—´çš„è·ç¦»
+     * @param {Array[Number,Number]} a åæ ‡1
+     * @param {Array[Number,Number]} b åæ ‡2
+     * @return {Number} è¿”å›ç‚¹ä¸ç‚¹é—´çš„è·ç¦»
+     */ 
+    function pointToPoint(a, b){
+          return sqrt(pow(a[0] - b[0], 2) + pow(a[1] - b[1], 2));
+    }
+    
+    /**
+     * è®¡ç®—ç‚¹çš„è§’åº¦
+     * @param {Array} origin åœ†å¿ƒåæ ‡
+     * @param {Array} point ç‚¹åæ ‡
+     * @param {Number} eccentricity ç¦»å¿ƒç‡
+     * @return {Number} è¿”å›è§’åº¦,å•ä½å¼§åº¦
+     */
+    function pointToAngle(origin, point, eccentricity){
+        if (typeof eccentricity == 'undefined') eccentricity = 1;
+        if (point[0] == origin[0]){
+            if (point[1] > origin[1])
+                return PI * 0.5;
+            return PI * 1.5
+        } else if (point[1] == origin[1]){
+            if (point[0] > origin[0])
+                return 0;
+            return PI;
+        }
+        var t = atan((origin[1] - point[1]) / (origin[0] - point[0]) * eccentricity);
+        if (point[0] > origin[0] && point[1] < origin[1])
+            return t + 2 * PI;
+        if (point[0] > origin[0] && point[1] > origin[1])
+            return t;
+        return t + PI;
+    }
+    
+    /**
+     * è®¡ç®—ç‚¹åˆ°çº¿æ®µçš„è·ç¦»
+     * @param {Array[Number,Number]} point ç‚¹åæ ‡
+     * @param {Array[Number,Number]} a çº¿æ®µåæ ‡1
+     * @param {Array[Number,Number]} b çº¿æ®µåæ ‡2
+     * @return {Number} è¿”å›ç‚¹åˆ°çº¿æ®µçš„è·ç¦»
+     */
+    function pointToLine(point, a, b){
+        if (a[0] == b[0] && a[1] == b[1]) return 0;
+        var t = ((a[0] - b[0]) * (a[0] - point[0]) + (a[1] - b[1]) * (a[1] - point[1])) /
+            ((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
+        t = max(0, min(1, t));
+        return pointToPoint(point, bezier([a, b], t));
+    }
+    
+    /**
+     * è´èµ›å°”æ›²çº¿
+     * @param{Array[Array[Number, Number],...]} curve æ›²çº¿æ¯ä¸ªå‚è€ƒç‚¹
+     * @param{Number} rate æ¯”ç‡
+     * @return{}
+     */
+    function bezier(curve, rate){
+        if (!curve || !curve.length) return [];
+        if (curve.length == 1) return [curve[0][0], curve[0][1]];
+        if (curve.length == 2) return [
+            curve[0][0] + (curve[1][0] - curve[0][0]) * rate,
+            curve[0][1] + (curve[1][1] - curve[0][1]) * rate
+        ];
+        var temp = [];
+        for (var i = 1; i < curve.length; i++){
+            temp.push(bezier([curve[i - 1], curve[i]], rate));
+        }
+        return bezier(temp, rate);
+    }
+    
+    /**
+     * å°†ä¸€æ¡æ›²çº¿å‰ªæˆä¸¤æ®µ
+     * @param {Array[Array[Number, Number],...]} curve æ›²çº¿æ¯ä¸ªå‚è€ƒç‚¹
+     * @param {Number} rate æ¯”ç‡
+     * @return {Array[Array,Array]} è¿”å›è¢«è£å‰ªåçš„ä¸¤æ¡æ›²çº¿åæ ‡
+     */
+    function cutBezier(curve, rate){
+        if (!curve || curve.length < 2) return;
+        var pa = curve[0], pb = curve[curve.length - 1],
+            ta = [], tb = [],
+            ra = [], rb = [];
+        for (var i = 0; i < curve.length; i++){
+            ta.push(curve[i]);
+            ra.push(bezier(ta, rate));
 
-	/**
-	 * ¼ÆËãµãµ½µãÖ®¼äµÄ¾àÀë
-	 * @param {Array[Number,Number]} a ×ø±ê1
-	 * @param {Array[Number,Number]} b ×ø±ê2
-	 * @return {Number} ·µ»ØµãÓëµã¼äµÄ¾àÀë
-	 */ 
-	function pointToPoint(a, b){
-  		return sqrt(pow(a[0] - b[0], 2) + pow(a[1] - b[1], 2));
-	}
-	
-	/**
-	 * ¼ÆËãµãµÄ½Ç¶È
-	 * @param {Array} origin Ô²ĞÄ×ø±ê
-	 * @param {Array} point µã×ø±ê
-	 * @param {Number} eccentricity ÀëĞÄÂÊ
-	 * @return {Number} ·µ»Ø½Ç¶È,µ¥Î»»¡¶È
-	 */
-	function pointToAngle(origin, point, eccentricity){
-		if (/^u/.test(typeof eccentricity)) eccentricity = 1;
-		if (point[0] == origin[0]) {
-			if (point[1] > origin[1])
-				return PI * 0.5;
-			return PI * 1.5
-		} else if (point[1] == origin[1]) {
-			if (point[0] > origin[0])
-				return 0;
-			return PI;
-		}
-		var t = atan((origin[1] - point[1]) / (origin[0] - point[0]) * eccentricity);
-		if (point[0] > origin[0] && point[1] < origin[1])
-			return t + 2 * PI;
-		if (point[0] > origin[0] && point[1] > origin[1])
-			return t;
-		return t + PI;
-	}
-	
-	/**
-	 * ¼ÆËãµãµ½Ïß¶ÎµÄ¾àÀë
-	 * @param {Array[Number,Number]} point µã×ø±ê
-	 * @param {Array[Number,Number]} a Ïß¶Î×ø±ê1
-	 * @param {Array[Number,Number]} b Ïß¶Î×ø±ê2
-	 */
-	function pointToLine(point, a, b) {
-		if (a[0] == b[0] && a[1] == b[1]) return 0;
-		var t = ((a[0] - b[0]) * (a[0] - point[0]) + (a[1] - b[1]) * (a[1] - point[1])) /
-			((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
-		t = max(1, min(0, t));
-		return pointToPoint(point, bezier([a, b], t));
-	}
-	
-	/*
-	 * ±´Èü¶ûÇúÏß
-	 * @param{Array[Array[Number, Number],...]} curve ÇúÏßÃ¿¸ö²Î¿¼µã
-	 * @param{Number} rate ±ÈÂÊ
-	 */
-	function bezier(curve, rate){
-		if (!curve || !curve.length) return [];
-		if (curve.length == 1) return [curve[0][0], curve[0][1]];
-		if (curve.length == 2) return [
-			curve[0][0] + (curve[1][0] - curve[0][0]) * rate,
-			curve[0][1] + (curve[1][1] - curve[0][1]) * rate
-		];
-		var temp = [];
-		for (var i = 1; i < curve.length; i++){
-			temp.push(bezier([curve[i - 1], curve[i]], rate));
-		}
-		return bezier(temp, rate);
-	}
-	
-	/*
-	 * ½«Ò»ÌõÇúÏß¼ô³ÉÁ½¶Î
-	 * @param{Array[Array[Number, Number],...]} curve ÇúÏßÃ¿¸ö²Î¿¼µã
-	 * @param{Number} rate ±ÈÂÊ
-	 */
-	function cutBezier(curve, rate){
-		if (!curve || curve.length < 2) return;
-		var pa = curve[0], pb = curve[curve.length - 1],
-			ta = [], tb = [],
-			ra = [], rb = [];
-		for (var i = 0; i < curve.length; i++){
-			ta.push(curve[i]);
-			ra.push(bezier(ta, rate));
+            tb.unshift(curve[curve.length - i - 1]);
+            rb.unshift(bezier(tb, rate));
+        }
+        return [ra, rb];
+    }
+    /**
+     * æ—‹è½¬ä¸€ä¸ªç‚¹åæ ‡
+     * @param {Array} point ç›®æ ‡åæ ‡
+     * @param {Array} center ä¸­å¿ƒç‚¹
+     * @param {Number} angle é€‰æ‹©è§’åº¦ï¼Œå•ä½:å¼§åº¦
+     * @return {Array} è¿”å›æ—‹è½¬åçš„åæ ‡
+     */
+    function rotatePoint(point, center, angle){
+        var radius = pointToPoint(center, point);
+        angle = pointToAngle(center, point) + angle;
+        return [
+            center[0] + Math.cos(angle) * radius,
+            center[1] + Math.sin(angle) * radius
+        ];
+    }
 
-			tb.unshift(curve[curve.length - i - 1]);
-			rb.unshift(bezier(tb, rate));
-		}
-		return [ra, rb];
-	}
-	
-	exports.pointToPoint = pointToPoint;
-	exports.pointToLine = pointToLine;
-	exports.bezier = bezier;
-	exports.cutBezier = cutBezier;
-	exports.pointToAngle = pointToAngle;
+    /**
+     * è·å–ä¸¤æ¡çº¿æ®µçš„äº¤ç‚¹
+     * @param {Array[Number,Number]} a ç¬¬ä¸€æ¡çº¿æ®µåæ ‡1
+     * @param {Array[Number,Number]} b ç¬¬ä¸€æ¡çº¿æ®µåæ ‡2
+     * @param {Array[Number,Number]} c ç¬¬äºŒæ¡çº¿æ®µåæ ‡1
+     * @param {Array[Number,Number]} d ç¬¬äºŒæ¡çº¿æ®µåæ ‡2
+     * @return {Array[Number,Number]} è¿”å›ä¸¤æ¡çº¿æ®µçš„äº¤ç‚¹åæ ‡
+     */
+    function doubleLineIntersect(a, b, c, d){
+        var delta = (b[1] - a[1]) * (d[0] - c[0]) -
+            (d[1] - c[1]) * (b[0] - a[0]);
+        if (delta == 0) return;
+        var x = (                                                           
+                (b[0] - a[0]) *
+                (d[0] - c[0]) *
+                (c[1] - a[1]) +
+                
+                (b[1] - a[1]) *
+                (d[0] - c[0]) *
+                a[0] -
+                
+                (d[1] - c[1]) *
+                (b[0] - a[0]) * c[0]
+            ) / delta,
+            y = (
+                (b[1] - a[1]) *
+                (d[1] - c[1]) *
+                (c[0] - a[0]) +
+                
+                (b[0] - a[0]) *
+                (d[1] - c[1]) *
+                a[1] -
+                
+                (d[0] - c[0]) *
+                (b[1] - a[1]) *
+                c[1]
+            ) / -delta;
+            
+        if (
+            (sign(x - a[0]) * sign(x - b[0]) <= 0) &&
+            (sign(x - c[0]) * sign(x - d[0]) <= 0) &&
+            (sign(y - a[1]) * sign(y - b[1]) <= 0) &&
+            (sign(y - c[1]) * sign(y - d[1]) <= 0)
+        ){
+            return [x, y];
+        }
+    }
+
+    function pointToPolyline(point, polyline){
+        if (!point || !polyline || !polyline.length) return;
+        var result = pointToPoint(point, polyline[0]);
+        for (var i = 1, l = polyline.length; i < l; i++){
+            result = min(result, pointToLine(point, polyline[i - 1], polyline[i]));
+        }
+        return result;
+    }
+
+    exports.pointToPoint = pointToPoint;
+    exports.pointToLine = pointToLine;
+    exports.pointToPolyline = pointToPolyline;
+    exports.bezier = bezier;
+    exports.cutBezier = cutBezier;
+    exports.pointToAngle = pointToAngle;
+    exports.doubleLineIntersect = doubleLineIntersect;
+    exports.rotatePoint = rotatePoint;
 }(AceGeometric);
