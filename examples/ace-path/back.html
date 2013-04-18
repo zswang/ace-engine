@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../scripts/ace-path-simple.js"></script>
+        <script src="http://fe.bdimg.com/jq/jquery-1.7.min.js"></script>
+        <title>ace path simple examples</title>
+        <style>
+#div{
+    ownerflow: hidden;
+    width: 300px;
+    height: 300px;
+    border: solid 1px black;
+    display: inline-block;
+}
+#canvas{
+    ownerflow: hidden;
+    border: solid 1px black;
+}
+#path{
+    width: 600px;
+}
+        </style>
+    </head>
+    <body>
+        <div>
+            path: <input id="path" type="text" value="M0,0 L100,100 C 1,1 200,10 30, 100 Z" />
+        </div>
+        <div>
+            stroke: <input id="stroke" type="text" value="red" />
+            fill: <input id="fill" type="text" value="green" />
+        </div>
+        <div id="div"></div>
+        <script>
+void function(){
+    var pathDiv = AcePath.create({
+        parent: 'div'
+    });
+    var timer;
+    function changeInput(){
+        var options = {
+            path: $('#path').val(),
+            stroke: $('#stroke').val(),
+            fill: $('#fill').val()
+        };
+        pathDiv.attr(options);
+        timer && clearTimeout(timer);
+        timer = 0;
+    }
+    $('input').keyup(function(){
+        timer && clearTimeout(timer);
+        timer = setTimeout(changeInput, 100);
+    });
+    $('input').keyup();
+}();
+        </script>
+    </body>
+</html>

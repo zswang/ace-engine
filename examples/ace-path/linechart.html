@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../scripts/ace-geometric.js"></script>
+        <script src="../../scripts/ace-path-simple.js"></script>
+        <script src="http://fe.bdimg.com/jq/jquery-1.7.min.js"></script>
+        <title>ace path simple examples</title>
+        <style>
+#div{
+    ownerflow: hidden;
+    width: 500px;
+    height: 200px;
+    border: solid 1px black;
+    display: inline-block;
+    padding: 0;
+}
+#mark{
+    margin-left: -5px;
+}
+#mark span{
+    font: 12px/1.125 Arial,Helvetica,sans-serif;
+    display: inline-block;
+    width: 20px;
+}
+        </style>
+    </head>
+    <body>
+        <div id="div"></div>
+        <div id="mark">
+            <script>
+void function(){
+    for (var i = 0; i * 20 <= 500; i++){
+        document.write('<span>', i, '</span>');
+    }
+}();
+            </script>
+        </div>
+        <script>
+void function(){
+    var 
+        pathBack = AcePath.create({
+            parent: 'div',
+            stroke: '#EEE'
+        }),
+        pathRed = AcePath.create({
+            parent: 'div',
+            stroke: 'red',
+            strokeWidth: 3
+        }),
+        pathBlue = AcePath.create({
+            parent: 'div',
+            stroke: 'blue',
+            strokeWidth: 3
+        }),
+        pointsRed = [],
+        pointsBlue = [],
+        pointsBack = [];
+
+    for (var i = 0; i * 20 <= 500; i++){
+        pointsRed.push([i * 20, Math.random() * 200]);
+        pointsBlue.push([i * 20, Math.random() * 200]);
+        pointsBack.push('M' + [[i * 20, 0], [i * 20, 200]].join('L '));
+    }
+
+    pathRed.attr('path', 'M ' + pointsRed.join('L '));
+    pathBlue.attr('path', 'M ' + pointsBlue.join('L '));
+    pathBack.attr('path', pointsBack.join(' '));
+    $('#div').mousemove(function(e){
+        var point = [e.offsetX, e.offsetY];
+        if (AceGeometric.pointToPolyline(point, pointsRed) <= 3){
+            pathRed.attr('strokeWidth', 5);
+            pathBlue.attr('strokeWidth', 3)
+        } else {
+            if (AceGeometric.pointToPolyline(point, pointsBlue) <= 3){
+                pathBlue.attr('strokeWidth',  5);
+            } else {
+                pathBlue.attr('strokeWidth', 3)
+            }
+            pathRed.attr('strokeWidth', 3);
+        }
+
+    });
+}();
+        </script>
+    </body>
+</html>

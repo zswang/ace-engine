@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../scripts/ace-path.js"></script>
+        <script src="../../scripts/ace-geometric.js"></script>
+        <script src="http://fe.bdimg.com/jq/jquery-1.7.min.js"></script>
+        <title>ace path examples</title>
+        <style>
+#canvas{
+    ownerflow: hidden;
+    width: 600px;
+    height: 600px;
+    border: solid 1px black;
+    cursor: crosshair;
+}
+        </style>
+    </head>
+    <body>
+        <div id="canvas"></div>
+        <script>
+void function(){
+    /*
+     * 闪电路径
+     */
+    function thunderLine(from, to, angle, spaceMin, spaceMax){
+        var a, s, t = spaceMax - spaceMin, p, result = [];
+        result.push(from.concat());
+        while (AceGeometric.pointToPoint(from, to) > spaceMax){
+            a = AceGeometric.pointToAngle(from, to) + angle * Math.random() - angle / 2;
+            s = spaceMin + Math.random() * t;
+            p = [
+                parseInt(from[0] + Math.cos(a) * s),
+                parseInt(from[1] + Math.sin(a) * s)
+            ];
+            result.push(p);
+            from = p;
+        }
+        result.push(to.concat());
+        return result;
+    }
+    var path = AcePath.create({
+        parent: 'canvas'
+    });
+
+    var points, timer;
+    $('#canvas').mousedown(function(e){
+        e.preventDefault();
+        var pos = [e.pageX - this.offsetLeft, e.pageY - this.offsetTop];
+        points = [[pos[0], pos[1]], [pos[0], pos[1]]];
+        timer && clearInterval(timer);
+        timer = setInterval(function(){
+            var a = Math.PI * 0.7, minS = 3, maxS = 25;
+            path.attr('path', 'M' + [].concat(
+                thunderLine(points[0], points[1], a, minS, maxS)
+            ).join('L'));
+        }, 50);
+    }).mouseup(function(e){
+        points = null;
+        timer && clearInterval(timer);
+        timer = 0;
+        path.attr('path', '');
+    }).mousemove(function(e){
+        if (!points) return;
+        if (window.getSelection)
+            getSelection().removeAllRanges();
+        else if (document.selection && document.selection.empty)
+            document.selection.empty();
+        points[1] = [e.pageX - this.offsetLeft, e.pageY - this.offsetTop];
+    });
+}();
+        </script>
+    </body>
+</html>

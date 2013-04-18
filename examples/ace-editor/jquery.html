@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <meta name="author" content="http://weibo.com/zswang" />
+    <title>Demo</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="../../scripts/ace-editor.js"></script>
+</head>
+<body>
+    <ul>
+        <li><input type="text" /></li>
+        <li><input type="text" /></li>
+    </ul>
+    <button>1</button>
+    <button>2</button>
+    <button>3</button>
+    <button>4</button>
+    <button>5</button>
+    <button>6</button>
+    <script>
+void function(){
+    /**
+     * @see 
+     * @author Íõ¼¯ðÀ(wangjihu,http://weibo.com/zswang)
+     * @version 2012-00-00
+     */
+    $('button').click(function(){
+        $('li input').selectText($(this).html());
+    });
+}();
+    </script>
+</body>
+</html>

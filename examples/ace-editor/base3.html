@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../scripts/ace-editor.js"></script>
+        <title>ace editor examples</title>
+        <style>
+            textarea{
+                width: 500px;
+                height: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        <span></span>
+        <div><textarea id="editor">0123456789</textarea></div>
+        <script>
+function g(id){
+    return document.getElementById(id);
+}
+/**
+ * 向前补零 "1",5 -> "00001"
+ * @param {String} n 整数字符串
+ * @param {Number} len 长度
+ * @return {String} 返回补零后的字符串
+ */
+function fullZero(n, len, d){
+    d = d || '0';
+    return new Array(len - n.length + 1).join(d) + n;
+}
+
+void function(){
+    g('editor').onkeydown = function(e){
+        e = e || event;
+        var offset;
+        switch(e.keyCode){
+            case 38: // up
+                offset = +1;
+                break;
+            case 40: // down
+                offset = -1;
+                break;
+            default:
+                return;
+        }
+        var selectText = AceEditor.getSelectText(this);
+        var selectRange = AceEditor.getSelectRange(this);
+        if (selectText){
+            if (!(/\D+/.test(selectText))){
+                var selectLength = selectText.length;
+                selectText = offset + parseInt(selectText);
+                if (selectText < 0){
+                    selectText = fullZero('', selectLength, '9');
+                } else if (String(selectText).length > selectLength){
+                    selectText = fullZero('', selectLength, '0');
+                }
+                AceEditor.setSelectText(this, fullZero(String(selectText), selectLength));
+                AceEditor.setSelectRange(this, selectRange);
+            }
+        } else {
+            var value = AceEditor.getValue(this);
+            var selectLength = 1;
+            var selectText = value.substr(selectRange[0], 1);
+            if (!(/\D+/.test(selectText))){
+                selectText = offset + parseInt(selectText);
+                if (selectText < 0){
+                    selectText = fullZero('', selectLength, '9');
+                } else if (String(selectText).length > selectLength){
+                    selectText = fullZero('', selectLength, '0');
+                }
+                this.value = value.slice(0, selectRange[0]) + selectText +
+                    value.slice(selectRange[0] + 1);
+                AceEditor.setSelectRange(this, selectRange);
+            }
+        }
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+        e.cancelBubble = true;
+        e.returnValue = false;
+    };
+}();
+        </script>
+    </body>
+</html>

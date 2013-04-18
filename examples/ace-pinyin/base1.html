@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="../../scripts/ace-pinyin.js"></script>
+		<title>ace pinyin examples</title>
+		<style>
+#input{
+}
+#output{
+}
+		</style>
+	</head>
+	<body>
+		<input type="text" id="input" />
+		<input type="text" id="output" readonly />
+		<script>
+void function(){
+	var input = document.getElementById('input');
+	var output = document.getElementById('output');
+	input.onkeyup = function(){
+		output.value = AcePinyin.encode(input.value);
+	};
+	input.onkeyup();
+}();
+		</script>
+	</body>
+</html>

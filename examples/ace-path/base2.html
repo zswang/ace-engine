@@ -1,0 +1,86 @@
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../scripts/ace-path.js"></script>
+        <script src="../../scripts/ace-event.js"></script>
+        <title>ace path examples</title>
+        <style>
+#canvas{
+    ownerflow: hidden;
+    border: solid 1px black;
+}
+#path{
+    width: 600px;
+}
+        </style>
+    </head>
+    <body>
+        <div>
+            path: <input id="path" type="text" value="M0,0 L100,100 C 1,1 200,10 30, 100 Z" />
+        </div>
+        <div>
+            stroke: <input id="stroke" type="text" value="red" />
+            fill: <input id="fill" type="text" value="green" />
+        </div>
+        <div id="toolbar">
+            <button cmd="set">set</button>
+        </div>
+        <canvas id="canvas" width="300px" height="300px"></canvas>
+        <script>
+void function(){
+    /*
+    function A(options){
+        if (typeof options.parent == 'string'){
+            this.parent = document.getElementById(options.parent);
+        } else {
+            this.parent = options.parent || document.body;
+        }
+
+        this.fill = options.fill || 'none';
+        this.stroke = options.stroke || 'black';
+        this.strokeWidth = options.strokeWidth || options['stroke-width'] || 1;
+        this.path = options.path || 'M 0,0';
+
+        this.fill = options.fill || 'none';
+        this.stroke = options.stroke || 'black';
+        this.strokeWidth = options.strokeWidth || options['stroke-width'] || 1;
+        this.path = options.path || 'M 0,0';
+        if (/^canvas$/i.test(this.parent.tagName)){
+            this.canvas = this.parent;
+            this.repaint();
+            return;
+        }
+    }
+    A.prototype.repaint = function(){
+        var context = this.canvas.getContext('2d');
+        console.log(1);
+        context.stroke();
+    }
+    new A({parent: 'canvas'});
+    return;
+    */
+  
+    var path = AcePath.create({
+        parent: 'canvas',
+        path: 'M0,0 L100,100'
+    });
+    AcePath.create({
+        parent: 'canvas',
+        path: 'M80,80 L120,100'
+    });
+    AceEvent.on('toolbar', function(command){
+        switch(command){
+            case 'set':
+                path.attr({
+                    'path': document.getElementById('path').value,
+                    'stroke': document.getElementById('stroke').value,
+                    'fill': document.getElementById('fill').value
+                });
+                break;
+        }
+    });
+}();
+        </script>
+    </body>
+</html>
