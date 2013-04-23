@@ -1,0 +1,145 @@
+
+<!--DOCTYPE html-->
+<html>
+<head>
+    <meta charset=utf-8 />
+    <meta name="author" content="http//weibo.com/zswang" />
+    <title>Demo</title>
+    <style>
+html{
+    background: black;
+    overflow: hidden;
+}
+body{
+    overflow: hidden;
+}
+div, body, svg{
+    margin: 0;
+    padding: 0;
+}
+    </style>
+    <script src="../../scripts/ace-geometric.js"></script>
+    <script src="../../scripts/ace-path-simple.js"></script>
+</head>
+<body>
+    <script>
+void function(){
+
+    /**
+     * 黑洞示例
+     * @author 王集鹄(wangjihu,http://weibo.com/zswang)
+     */
+    var
+        math = Math,
+        random = math.random,
+        cos = math.cos,
+        sin = math.sin,
+        PI = math.PI,
+        linePath = AcePath.create({
+            parent: document.body,
+            fill: 'none',
+            stroke: '#a3d4fc',
+            strokeOpacity: 0.5,
+            strokeWidth: 5
+        }),
+        ag = AceGeometric,
+        rotatePoint = ag.rotatePoint;
+  
+    var lines = {}, guid = 0;
+    /**
+     * 添加一朵雪花
+     * @param{Number} center 中心位置
+     * @param{Number} angle 选择角度
+     * @param{Number} length 长度
+     * @param{Number} radius 距离圆心位置
+     * @param{Number} life 生命周期
+     */
+    function appendLine(center, angle, length, radius, life){
+        return lines[guid] = {
+            id: guid++,
+            birthday: new Date,
+            center: center,
+            angle: angle,
+            length: length,
+            radius: radius,
+            life: life
+        };
+    }
+    /**
+     * 更新目前的雪花状态
+     * @param {Object} item 雪花属性值
+     */
+    function updateLine(item){
+        if (!item) return;
+        var age = 1 - (new Date - item.birthday) / item.life;
+        if (age <= 0){ // 消逝
+            delete lines[item.id];
+            return;
+        }
+        var path = [];
+        path.push('M ' + [
+            item.center[0] + cos(item.angle) * item.radius * (age),
+            item.center[1] + sin(item.angle) * item.radius * (age)
+        ]);
+        path.push('L ' + [
+            item.center[0] + cos(item.angle) * (item.radius + item.length) * (age),
+            item.center[1] + sin(item.angle) * (item.radius + item.length) * (age)
+        ]);
+        path.push('Z');
+        
+        try{
+            item.path = path.join(' ');
+        } catch(ex){
+            item.path = 'M 0,0';
+        }
+    }
+    /**
+     * 获取元素大小
+     */
+    function getElementSize(element) {
+        var box = element.getBoundingClientRect();
+        return [parseInt(box.right - box.left), parseInt(box.bottom - box.top)];
+    }
+
+    /**
+     * 获取页面大小
+     */
+    function getPageSize() {
+        var doc_size = getElementSize(document.documentElement), 
+            body_size = getElementSize(document.body);
+        return [
+            Math.max(doc_size[0], body_size[0], window.innerWidth || 0, document.documentElement.scrollWidth || 0),
+            Math.max(doc_size[1], body_size[1], window.innerHeight || 0, document.documentElement.scrollHeight || 0)
+        ];
+    }
+
+    //setTimeout(function(){
+    setInterval(function(){
+        if (random() < 0.7){
+        //if (true){
+            var size = getPageSize();
+            appendLine([size[0] / 2, size[1] / 2],
+                random() * PI * 2,
+                100 + random() * 100,
+                50 + random() * 100,
+                200 + random() * 150);
+            appendLine([size[0] / 2, size[1] / 2],
+                random() * PI * 2,
+                100 + random() * 100,
+                50 + random() * 100,
+                200 + random() * 150);
+        }
+        for (var p in lines){
+            updateLine(lines[p]);
+        }
+
+        var path = [];
+        for (var p in lines){
+            path.push(lines[p].path);
+        }
+        linePath.attr('path', path.join(' '));
+    }, 50);
+}();
+    </script>
+</body>
+</html>

@@ -82,41 +82,54 @@ void function(exports){
     }
     
     /**
-     * 贝赛尔曲线
-     * @param{Array[Array[Number, Number],...]} curve 曲线每个参考点
+     * 贝赛尔公式，支持多维数组
+     * @param{Array[Array[Number, ...],...]} items 每个参考点
      * @param{Number} rate 比率
-     * @return{}
+     * @return{Number|Array[Number, ...]} 返回
      */
-    function bezier(curve, rate){
-        if (!curve || !curve.length) return [];
-        if (curve.length == 1) return [curve[0][0], curve[0][1]];
-        if (curve.length == 2) return [
-            curve[0][0] + (curve[1][0] - curve[0][0]) * rate,
-            curve[0][1] + (curve[1][1] - curve[0][1]) * rate
-        ];
-        var temp = [];
-        for (var i = 1; i < curve.length; i++){
-            temp.push(bezier([curve[i - 1], curve[i]], rate));
+    function bezier(items, rate){
+        if (!items || !items.length) return;
+        var first = items[0], second = items[1];
+        var level = first instanceof Array ? first.length : 0; // 下标数,0为非数组
+        switch(items.length){
+            case 1:
+                return level ? first.slice() : first; // 数组需要克隆，非数组直接返回
+            case 2:
+                if (level){ // 非数组
+                    var result = [];
+                    for (var i = 0; i < level; i++){
+                        result[i] = bezier([first[i], second[i]], rate);
+                    }
+                    return result;
+                }
+                return first + (second - first) * rate; 
+            default:
+                var temp = [];
+                for (var i = 1; i < items.length; i++){
+                    temp.push(bezier([items[i - 1], items[i]], rate));
+                }
+                return bezier(temp, rate);
         }
-        return bezier(temp, rate);
     }
-    
+
+    //console.log(bezier([[1], [7]], 0.5));    
+
     /**
-     * 将一条曲线剪成两段
-     * @param {Array[Array[Number, Number],...]} curve 曲线每个参考点
+     * 将一条贝赛尔数组剪成两段
+     * @param {Array[Array[Number, Number],...]} items 贝赛尔每个参考点
      * @param {Number} rate 比率
-     * @return {Array[Array,Array]} 返回被裁剪后的两条曲线坐标
+     * @return {Array[Array,Array]} 返回被裁剪后的两个贝赛尔数组
      */
-    function cutBezier(curve, rate){
-        if (!curve || curve.length < 2) return;
-        var pa = curve[0], pb = curve[curve.length - 1],
+    function cutBezier(items, rate){
+        if (!items || items.length < 2) return;
+        var pa = items[0], pb = items[items.length - 1],
             ta = [], tb = [],
             ra = [], rb = [];
-        for (var i = 0; i < curve.length; i++){
-            ta.push(curve[i]);
+        for (var i = 0; i < items.length; i++){
+            ta.push(items[i]);
             ra.push(bezier(ta, rate));
 
-            tb.unshift(curve[curve.length - i - 1]);
+            tb.unshift(items[items.length - i - 1]);
             rb.unshift(bezier(tb, rate));
         }
         return [ra, rb];
