@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../scripts/ace-sound.js"></script>
+        <script src="http://fe.bdimg.com/jq/jquery-1.7.min.js"></script>
+        <title>ace sound examples</title>
+        <style>
+        </style>
+    </head>
+    <body>
+        <input type="button" value="mp3/circuit.mp3" />
+        <input type="button" value="mp3/win.mp3" />
+        <input type="button" value="stop" />
+        <script>
+$('input').click(function(){
+    if (this.value == 'stop'){
+        AceSound.stop();
+    } else {
+        AceSound.play(this.value);    
+    }
+});
+        </script>
+    </body>
+</html>
