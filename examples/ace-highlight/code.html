@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../scripts/ace-highlight.js"></script>
+        <script src="http://fe.bdimg.com/jq/jquery-1.7.min.js"></script>
+        <title>ace highlight examples</title>
+        <style>
+        </style>
+    </head>
+    <body>
+        <textarea id="code"></textarea>
+        <div id="preview"></div>
+        <script>
+$('#code').keyup(function(e){
+    $('#preview').html(AceHighlight.exportHtml(this.value));
+});
+        </script>
+    </body>
+</html>

@@ -44,7 +44,11 @@ void function(exports){
             soundElement = soundElement || {};
             try{
                 if (!soundElement[file]){
-                    soundElement[file] = new Audio(ogg ? file.replace(/\.mp3/, '.ogg') : file);
+                    var url = ogg ? file.replace(/\.mp3/, '.ogg') : file;
+                    soundElement[file] = new Audio();
+                    /* ios 不支持 new Audio(file) */
+                    soundElement[file].src = url;
+                    soundElement[file].load();
                     loop && soundElement[file].addEventListener('ended', function(){
                         this.currentTime = 0;
                         this.play();
