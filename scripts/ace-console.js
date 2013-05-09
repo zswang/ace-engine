@@ -1,12 +1,14 @@
 var AceConsole = typeof exports == 'undefined' ? {} : exports;
+
 void function(exports){
 
     if (typeof console == 'undefined') return;
     
-    /*
+    /**
      * @fileoverview 控制台输出彩色字
      * @see http://en.wikipedia.org/wiki/ANSI_escape_code
      * @author 王集鹄(WangJihu,http://weibo.com/zswang)
+     * @date 2013年05月09日
      */
     
     /**
@@ -22,13 +24,18 @@ void function(exports){
         cyan: 6,
         white: 7
     };
-    
+    /**
+     * 样式表
+     */
     var styles = {
         reset: 0,
         bold: 1,
+        b: 1,
         faint: 2,
         italic: 3,
+        i: 3,
         underline: 4,
+        u: 4,
         blink: 5,
         'blink:slow': 5,
         'blink:rapid': 6,
@@ -36,24 +43,23 @@ void function(exports){
         conceal: 8
     };
     
-    styles['b'] = styles.bold;
-    styles['i'] = styles.italic;
-    styles['u'] = styles.underline;
-    
     /**
      * color offset 颜色起始偏移
      */
     var colorOffsets = {
-        foreground: 30,
-        background: 40,
+        foreground: 30, // 前景色
+        background: 40, // 背景色
         foregroundHight: 90, // Set foreground color, high intensity
         backgroundHight: 100 // Set background color, high intensity
-    }
+    };
     
     /**
      * 前缀
      */
     var prefix = '\x1b[';
+    /**
+     * 后缀
+     */
     var suffix = 'm';
     
      /**
@@ -69,6 +75,15 @@ void function(exports){
         return result;
     }
     
+    /**
+     * 将状态转换为字符串
+     * @param {Object} status 状态集合
+     *  @field {String} style 样式
+     *  @field {String} foregroundColor 前景色
+     *  @field {Boolean} foregroundHight 前景色是否高亮
+     *  @field {String} backgroundColor 背景色
+     *  @field {Boolean} backgroundHight 背景色是否高亮
+     */
     function status2text(status){
         if (!status) return '';
         var result = [];
@@ -114,12 +129,12 @@ AceConsole.log('[light:red]hello world![/light:red]');
 AceConsole.log('[bg:light:red][blue]hello [b]world![/b][/blue][/bg:light:red]');
      */
     function log(){
-        var message = [];
+        var messages = [];
         for (var i = 0; i < arguments.length; i++){
             var statuses = []; // 状态堆
-            message.push(String(arguments[i]).replace(/\[\/?([^\]]*)\]/g, function(all, flag){
-                if (all.slice(1, 2) == '/'){
-                    var color = flag.replace(/\b(light?|bg)\b|:/ig, '');
+            messages.push(String(arguments[i]).replace(/\[(\/?)([^\]]*)\]/g, function(all, close, flag){
+                var color = flag.replace(/\b(light?|bg)\b|:|\s/ig, '');
+                if (close){
                     if (flag == 'color' || color in colors || flag in styles){
                         statuses.pop(); // 移除最后一个
                         return prefix + styles.reset + suffix + status2text(statuses[statuses.length - 1]);
@@ -149,7 +164,6 @@ AceConsole.log('[bg:light:red][blue]hello [b]world![/b][/blue][/bg:light:red]');
                 }
 
                 if (!changed){
-                    var color = flag.replace(/\b(light?|bg)\b|:/ig, '');
                     if (color in colors){
                         var bg = /\b(bg)\b/i.test(flag);
                         var light = /\b(light?)\b/i.test(flag);
@@ -169,9 +183,10 @@ AceConsole.log('[bg:light:red][blue]hello [b]world![/b][/blue][/bg:light:red]');
                 return status2text(status);
             }));
         }
-        // console.log(JSON.stringify(message.join(' '))); // debug
-        console.log(message.join(' '));
+        // console.log(JSON.stringify(messages.join(' '))); // debug
+        console.log(messages.join(' '));
     }
     
     exports.log = log;
+
 }(exports);
