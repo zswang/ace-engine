@@ -4,6 +4,8 @@ void function(exports){
 
     if (typeof console == 'undefined') return;
     
+    var browser = typeof window != 'undefined' && typeof document != 'undefined'; // 是否在浏览器环境
+    
     /**
      * @fileoverview 控制台输出彩色字
      * @see http://en.wikipedia.org/wiki/ANSI_escape_code
@@ -65,12 +67,11 @@ void function(exports){
      /**
       * 克隆对象
       */
-    function cloneObject(object){
+    function cloneObject(source){
+        if (!source || typeof source != 'object') return source;
         var result = {};
-        if (object){
-            for (var p in object){
-                result[p] = object[p];
-            }
+        for (var p in source){
+            result[p] = cloneObject(source[p]);
         }
         return result;
     }
@@ -83,12 +84,46 @@ void function(exports){
      *  @field {Boolean} foregroundHight 前景色是否高亮
      *  @field {String} backgroundColor 背景色
      *  @field {Boolean} backgroundHight 背景色是否高亮
+     * @param {Array} fonts 字体输出
      */
-    function status2text(status){
+    function status2text(status, fonts){
         if (!status) return '';
+        
         var result = [];
-        if (status.style){
-            result.push(styles[status.style]);
+        if (fonts){
+            if (status.styles){
+                if (status.styles.bold ||  status.styles.b){
+                    result.push('font-weight:bold');
+                }
+                if (status.styles.italic ||  status.styles.i){
+                    result.push('font-style:italic');
+                }
+                if (status.styles.underline ||  status.styles.u){
+                    result.push('text-decoration:underline');
+                }
+            }
+            if (status.backgroundColor){
+                if (status.backgroundHight){
+                } else {
+                    result.push('background:' + status.backgroundColor);
+                }
+            }
+            
+            if (status.foregroundColor){
+                if (status.foregroundHight){
+                } else {
+                    result.push('color:' + status.foregroundColor);
+                }
+            }
+            if (!result.length) return '';
+            fonts.push(result.join(';'));
+            return '%c';
+        }
+        
+        if (status.styles){
+            for (var style in status.styles){
+                result.push(styles[style]);
+            }
         }
         if (status.backgroundColor){
             if (status.backgroundHight){
@@ -130,6 +165,7 @@ AceConsole.log('[bg:light:red][blue]hello [b]world![/b][/blue][/bg:light:red]');
      */
     function log(){
         var messages = [];
+        var fonts = [];
         for (var i = 0; i < arguments.length; i++){
             var statuses = []; // 状态堆
             messages.push(String(arguments[i]).replace(/\[(\/?)([^\]]*)\]/g, function(all, close, flag){
@@ -137,12 +173,17 @@ AceConsole.log('[bg:light:red][blue]hello [b]world![/b][/blue][/bg:light:red]');
                 if (close){
                     if (flag == 'color' || color in colors || flag in styles){
                         statuses.pop(); // 移除最后一个
+                        if (browser){
+                            fonts.push('');
+                            return '%c' + status2text(statuses[statuses.length - 1], fonts);
+                        }
                         return prefix + styles.reset + suffix + status2text(statuses[statuses.length - 1]);
                     }
                     return all; // 不能识别的语法
                 }
                 
-                var status = cloneObject(statuses[statuses.length - 1]);
+                var status = cloneObject(statuses[statuses.length - 1]) || {};
+                status.styles = status.styles || {};
                 var changed;
                 
                 flag.replace(/^color\s*=\s*([\w+:]+)(?:\s*,\s*([\w+:]+))\s*$/i, function(all, foreground, background){
@@ -158,7 +199,7 @@ AceConsole.log('[bg:light:red][blue]hello [b]world![/b][/blue][/bg:light:red]');
                 
                 if (!changed){
                     if (flag in styles){
-                        status.style = flag;
+                        status.styles[flag] = true;
                         changed = true;
                     }
                 }
@@ -180,13 +221,22 @@ AceConsole.log('[bg:light:red][blue]hello [b]world![/b][/blue][/bg:light:red]');
                 if (!changed) return all; // 无效数据
                 statuses.push(status);
                 
+                if (browser){
+                    return status2text(status, fonts);
+                }
                 return status2text(status);
             }));
         }
-        // console.log(JSON.stringify(messages.join(' '))); // debug
-        console.log(messages.join(' '));
+        if (browser){ // 浏览器环境
+            fonts.unshift(messages.join(' '));
+            // console.log(JSON.stringify(fonts)); // debug
+            console.log.apply(console, fonts);
+        } else{
+            // console.log(JSON.stringify(messages.join(' '))); // debug
+            console.log(messages.join(' '));
+        }
     }
     
     exports.log = log;
 
-}(exports);
+}(AceConsole);
