@@ -200,7 +200,7 @@ AceConsole.log('[bg:light:red][blue]hello [b]world![/b][/blue][/bg:light:red]');
                 status.styles = status.styles || {};
                 var changed;
                 
-                flag.replace(/^color\s*=\s*([\w+:]+)(?:\s*,\s*([\w+:]+))\s*$/i, function(all, foreground, background){
+                flag.replace(/^color\s*=\s*([\w+:]+)(?:\s*,\s*([\w+:]+))?\s*$/i, function(all, foreground, background){
                     status.foregroundColor = foreground.replace(/\b(light?)\b|:/ig, '') || '';
                     status.foregroundHight = /\b(light?)\b/i.test(foreground);
                     
