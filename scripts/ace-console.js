@@ -17,15 +17,27 @@ void function(exports){
      * color table 颜色表
      */
     var colors = {
-        black: 0,
-        red: 1,
-        green: 2,
-        yellow: 3,
-        blue: 4,
-        magenta: 5,
-        cyan: 6,
-        white: 7
+        black: 0, // lightgrey
+        red: 1, // lightcoral
+        green: 2, // lightgreen
+        yellow: 3, // lightyellow
+        blue: 4, // lightblue
+        magenta: 5, // lightpink
+        cyan: 6, // lightcyan
+        white: 7 // lightyellow
     };
+    
+    var lightColors = {
+        black: 'lightgrey',
+        red: 'lightcoral',
+        green: 'lightgreen',
+        yellow: 'lightyellow',
+        blue: 'lightblue',
+        magenta: 'lightpink',
+        cyan: 'lightcyan',
+        white: 'white'
+    };
+    
     /**
      * 样式表
      */
@@ -104,6 +116,7 @@ void function(exports){
             }
             if (status.backgroundColor){
                 if (status.backgroundHight){
+                    result.push('background:' + lightColors[status.backgroundColor]);
                 } else {
                     result.push('background:' + status.backgroundColor);
                 }
@@ -111,6 +124,7 @@ void function(exports){
             
             if (status.foregroundColor){
                 if (status.foregroundHight){
+                    result.push('color:' + lightColors[status.foregroundColor]);
                 } else {
                     result.push('color:' + status.foregroundColor);
                 }
