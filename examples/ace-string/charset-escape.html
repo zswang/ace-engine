@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <meta name="author" content="http//weibo.com/zswang" />
+    <script src="../../scripts/ace-string-charset.js"></script>
+    <title>demo charset encode</title>
+    <style>
+textarea{
+    width: 300px;
+    height: 50px;
+}
+    </style>
+</head>
+<body>
+    <ul>
+        <li>
+            input:
+            <textarea id="editorInput"></textarea>
+        </li>
+        <li>
+            gbk:
+            <textarea id="editorGbk"></textarea>
+        </li>
+        <li>
+            utf-8:
+            <textarea id="editorUtf8"></textarea>
+        </li>
+    <script>
+void function(){
+    var editorInput = document.getElementById('editorInput');
+    var editorGbk = document.getElementById('editorGbk');
+    var editorUtf8 = document.getElementById('editorUtf8');
+    
+    editorInput.onkeyup = function(){
+        AceString.charset.escape(editorInput.value, 'gbk', function(code){
+            editorGbk.value = code;
+        }) + '\n';
+        AceString.charset.escape(editorInput.value, 'utf-8', function(code){
+            editorUtf8.value = code;
+        }) + '\n';
+    };
+}();
+    </script>
+</body>
+</html>

@@ -8,12 +8,7 @@ void function(exports){
      */
     if (/charset-escape-value/.test(location)) return;
     
-    var iframe = document.createElement('iframe');
-    iframe.src = "about:blank";
-    iframe.style.visibility = 'hidden';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    //document.body.removeChild(iframe);
+    var iframe;
     
     /**
      * HTML编码
@@ -30,7 +25,14 @@ void function(exports){
             }[all] + ";";
         });
     }
-    
+    function init(){
+        if (iframe) return;
+        iframe = document.createElement('iframe');
+        iframe.src = "about:blank";
+        iframe.style.visibility = 'hidden';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+    }
     // webkit
     function webkit_charsetEscape(text, charset, callback){
         if (typeof charset == 'function'){
@@ -38,6 +40,7 @@ void function(exports){
             charset = '';
         }
         if (!callback) return;
+        init();
         charset = charset || 'gbk';
         var d = iframe.contentWindow.document;
         d.open();
@@ -55,6 +58,7 @@ void function(exports){
             charset = '';
         }
         if (!callback) return;
+        init();
         if (caches[text] || !text){
             callback(caches[text] || '');
             return;
@@ -84,5 +88,5 @@ void function(exports){
         form.submit();
     }
     exports.charset = exports.charset || {};
-    exports.charset.escape = /webkit/.test(navigator.userAgent) ? webkit_charsetEscape : charsetEscape;
+    exports.charset.escape = /webkit/i.test(navigator.userAgent) ? webkit_charsetEscape : charsetEscape;
 }(AceString);
