@@ -1,41 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset=utf-8 />
-	<meta name="author" content="http://weibo.com/zswang" />
-	<title>ace 3d examples</title>
-	<script src="../../scripts/ace-3d.js"></script>
-	<style>
-		#canvas{
-			border: solid 1px #ccc;
-		}
-	</style>
+    <meta charset=utf-8 />
+    <meta name="author" content="http://weibo.com/zswang" />
+    <title>ace 3d examples</title>
+    <script src="../../scripts/ace-geometric.js"></script>
+    <script src="../../scripts/ace-3d.js"></script>
+    <style>
+#canvas{
+    border: solid 1px #ccc;
+}
+    </style>
 </head>
 <body>
-	<canvas id="canvas" width="600" height="500"><span>Browser does not support the canvas.</span></canvas>
-	<script>
+    <canvas id="canvas" width="500" height="500"><span>Browser does not support the canvas.</span></canvas>
+    <script>
 void function(){
-	var canvas = document.getElementById('canvas');
-	if (canvas.getElementsByTagName('span')[0].offsetWidth != 0) return;
-	var context = canvas.getContext('2d');
-	function random(max){
-		return Math.random() * max;
-	}
-	var curve = [
-		[random(canvas.width), random(canvas.height), random(100)], 
-		[random(canvas.width), random(canvas.height), random(100)],
-		[random(canvas.width), random(canvas.height), random(100)],
-		[random(canvas.width), random(canvas.height), random(100)]
-	];
-	var count = 20;
-	for (var i = 0; i < count; i++){
-		var point = Ace3D.bezier(curve, i / count);
-		context.fillStyle = "red";
-		var zoom = 10 * (point[2] / 100);
-		context.rect(point[0], point[1], 10 + zoom, 10 + zoom);
-		context.stroke();
-	}
+    /**
+     * 三维贝赛尔曲线演示
+     * @author 王集鹄(WangJihu,http//weibo.com/zswang)
+     * @version 2013-05-22
+     */
+
+    function drawPointWithGradient(ctx, x, y, size, color, gradient){
+        var reflection;
+        reflection = size / 4;
+        ctx.save();
+        ctx.translate(x, y);
+        var radgrad = ctx.createRadialGradient(-reflection, -reflection, reflection, 0, 0, size);
+        radgrad.addColorStop(0, '#FFFFFF');
+        radgrad.addColorStop(gradient, color);
+        radgrad.addColorStop(1, 'rgba(1,159,98,0)');
+
+        ctx.fillStyle = radgrad;
+        ctx.fillRect(-size, -size, size*2, size*2);
+        ctx.restore();
+    }
+           
+    var canvas = document.getElementById('canvas');
+    if (canvas.getElementsByTagName('span')[0].offsetWidth != 0) return;
+    var context = canvas.getContext('2d');
+    function random(max){
+        return Math.random() * max;
+    }
+    var curve = [
+        [0, 0, 0], 
+        [random(20), random(20), 20 - random(40)],
+        [random(20), random(20), 20 - random(40)],
+        [random(20), random(20), 20 - random(40)]
+    ];
+    
+    var rotation = 0;
+    var distance = 1500;
+    var count = 40;
+    var points = [];
+    for (var i = 0; i < count; i++){
+        points.push(AceGeometric.bezier(curve, i / count))
+    }
+    for (var i = 0; i < count; i++){
+        points.push(Ace3D.rotateX(AceGeometric.bezier(curve, i / count), Math.PI))
+        points.push(Ace3D.rotateY(AceGeometric.bezier(curve, i / count), Math.PI))
+        points.push(Ace3D.rotateZ(AceGeometric.bezier(curve, i / count), Math.PI))
+    }
+    
+    var frameTime = new Date, frameCount = 0, fps = 0; // fps
+    var width = canvas.getAttribute("width");
+    var height = canvas.getAttribute("height");
+    function render(){
+        if (new Date - frameTime > 1000){ // fps
+            frameTime = new Date;
+            fps = frameCount;
+            frameCount = 0;
+        } else frameCount++;
+
+        var x, y;
+
+        context.save();
+        context.clearRect(0, 0, width, height);
+
+        var temp = [];
+        for (var i = 0; i < points.length; i++){
+            var p = points[i].slice();
+            Ace3D.rotateX(p, rotation);
+            Ace3D.rotateY(p, rotation);
+            Ace3D.rotateZ(p, rotation);
+            temp.push(p);
+        }
+        temp.sort(function(a, b){
+            return a[2] - b[2];
+        });
+        for (var i = 0; i < temp.length; i++){
+            var p = temp[i];
+            var t = Ace3D.projection(p, 150, distance);
+            x = t[0] + 250;
+            y = t[1] + 250;
+
+            if((x >= 0) && (x < width)){
+                if((y >= 0) && (y < height)){
+                    drawPointWithGradient(context, x, y, 5 + 2 * (p[2] / 20), "rgba(133,133,133," + parseInt(254 * ((p[2] + 20) / 40))  + ")", 0.8);
+                }
+            }                   
+        }
+        context.fillStyle = "black";
+        context.font = "12px";
+        context.fillText("fps:" + fps, 5, 15);  
+        
+        context.restore();
+        rotation += Math.PI / 90.0;
+    }    
+    setInterval(render, 1000 / 30);
 }();
-	</script>
+    </script>
 </body>
 </html>

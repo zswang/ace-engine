@@ -1,85 +1,104 @@
-var Ace3D = /^u/.test(typeof exports) ? Ace3D || {} : exports;
+var Ace3D = typeof exports == 'undefined' ? Ace3D || {} : exports;
 
 void function(exports){
-	
-	/*
-	 * see http://www.bitstorm.it/blog/en/2011/05/3d-sphere-html5-canvas/
-	 */
-	
-	var math = Math, sin = math.sin, cos = math.cos,
-		rotate_changes = [[1, 2], [0, 2], [0, 1]];
+    
+    /*
+     * see http://www.bitstorm.it/blog/en/2011/05/3d-sphere-html5-canvas/
+     */
+    
+    var math = Math,
+        sin = math.sin,
+        cos = math.cos,
+        /**
+         * 旋转轴线
+         */
+        rotate_axis = {
+            x: [1, 2],
+            y: [0, 2],
+            z: [0, 1]
+        };
 
-	function rotate(point, radians, index){
-		if (!point) return;
-		var indexs = point instanceof Array ? [0, 1, 2] : ['x', 'y', 'z'],
-			t = point[indexs[rotate_changes[index][0]]],
-			p = point[indexs[rotate_changes[index][1]]];
-		point[indexs[rotate_changes[index][0]]] = 
-			t * cos(radians) - p * sin(radians);
-		point[indexs[rotate_changes[index][1]]] = 
-			t * sin(radians) + p * cos(radians);
-	}
+    /**
+     * 旋转坐标
+     * @param{Array|Object} point 原坐标
+     * @param{Number} radians 选择角度，单位弧度
+     * @param{String} axis 轴线 'x','y','z'
+     */
+    function rotate(point, radians, axis){
+        if (!point) return;
+        var indexs = point instanceof Array ? [0, 1, 2] : ['x', 'y', 'z'],
+            t = point[indexs[rotate_axis[axis][0]]],
+            p = point[indexs[rotate_axis[axis][1]]];
+        point[indexs[rotate_axis[axis][0]]] = 
+            t * cos(radians) - p * sin(radians);
+        point[indexs[rotate_axis[axis][1]]] = 
+            t * sin(radians) + p * cos(radians);
+        return point;
+    }
+    /**
+     * 旋转x轴
+     * @param{Array|Object} point 原坐标 
+     * @param{Number} radians 选择角度，单位弧度
+     */
+    function rotateX(point, radians){
+        return rotate(point, radians, 'x');
+    }
 
-	function rotateX(point, radians){
-		rotate(point, radians, 0);
-	}
+    /**
+     * 旋转y轴
+     * @param{Array|Object} point 原坐标 
+     * @param{Number} radians 选择角度，单位弧度
+     */
+    function rotateY(point, radians){
+        return rotate(point, radians, 'y');
+    }
 
-	function rotateY(point, radians){
-		rotate(point, radians, 1);
-	}
+    /**
+     * 旋转z轴
+     * @param{Array|Object} point 原坐标 
+     * @param{Number} radians 选择角度，单位弧度
+     */
+    function rotateZ(point, radians){
+        return rotate(point, radians, 'z');
+    }
+    
+    /**
+     * 将3D坐标投影到2D
+     * @param{Array} point 原坐标
+     * @param{Number} zOffset z轴偏移
+     * @param{Number} distance 距离
+     */
+    function projection(point, zOffset, distance){
+        var indexs = point instanceof Array ? [0, 1, 2] : ['x', 'y', 'z'];
+        var result = point instanceof Array ? [] : {};
+        result[indexs[0]] = (distance * point[indexs[0]]) / (point[indexs[2]] - zOffset);
+        result[indexs[1]] = (distance * point[indexs[1]]) / (point[indexs[2]] - zOffset);
+        return result;
+    }
+    
+    // /**
+     // * p1--------p2
+     // * |          |
+     // * p3--------p4
+     // */
+    // function matrix(p1, p2, p3, p4){
+        // var indexs = p1 instanceof Array ? [0, 1] : ['x', 'y'];
+        // var tx = p1[indexs[0]];
+        // var ty = p1[indexs[1]];
 
-	function rotateZ(point, radians){
-		rotate(point, radians, 2);
-	}
-	
-	function projection(xy, z, xyOffset, zOffset, distance){
-		return (distance * xy) / (z - zOffset) + xyOffset;
-	}
+        // var a = (p2[indexs[0]] - tx) / 2;
+        // var b = (ty - p1[indexs[1]]) / 2;
 
-	/*
-	 * 贝赛尔曲线
-	 * @param{Array[Array[Number, Number, Number],...]} curve 曲线每个参考点
-	 * @param{Number} rate 比率
-	 */
-	function bezier(curve, rate){
-		if (!curve || !curve.length) return [];
-		if (curve.length == 1) return [curve[0][0], curve[0][1], curve[0][2]];
-		if (curve.length == 2) return [
-			curve[0][0] + (curve[1][0] - curve[0][0]) * rate,
-			curve[0][1] + (curve[1][1] - curve[0][1]) * rate,
-			curve[0][2] + (curve[1][2] - curve[0][2]) * rate
-		];
-		var temp = [];
-		for (var i = 1; i < curve.length; i++){
-			temp.push(bezier([curve[i - 1], curve[i]], rate));
-		}
-		return bezier(temp, rate);
-	}
-	
-	/*
-	 * 将一条曲线剪成两段
-	 * @param{Array[Array[Number, Number, Number],...]} curve 曲线每个参考点
-	 * @param{Number} rate 比率
-	 */
-	function cutBezier(curve, rate){
-		if (!curve || curve.length < 2) return;
-		var pa = curve[0], pb = curve[curve.length - 1],
-			ta = [], tb = [],
-			ra = [], rb = [];
-		for (var i = 0; i < curve.length; i++){
-			ta.push(curve[i]);
-			ra.push(bezier(ta, rate));
+        // var c = (p3[indexs[0]] - tx) / 2;
+        // var d = (ty - p3[indexs[1]]) / 2;
 
-			tb.unshift(curve[curve.length - i - 1]);
-			rb.unshift(bezier(tb, rate));
-		}
-		return [ra, rb];
-	}
+        // return [a, b, c, d, tx, ty];
+    // }
+    
+    exports.rotate = rotate;
+    exports.rotateX = rotateX;
+    exports.rotateY = rotateY;
+    exports.rotateZ = rotateZ;
+    exports.projection = projection;
 
-	exports.rotateX = rotateX;
-	exports.rotateY = rotateY;
-	exports.rotateZ = rotateZ;
-	exports.projection = projection;
-	exports.bezier = bezier;
-	exports.cutBezier = cutBezier;
 }(Ace3D);
