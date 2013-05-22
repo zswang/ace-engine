@@ -1,121 +1,104 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset=utf-8 />
-	<meta name="author" content="http://weibo.com/zswang" />
-	<title>Demo</title>
-	<script src="../../scripts/ace-3d.js"></script>
-	<script src="lib/js3d.js"></script>
-	<script>
-var canvas;
-var vR = 0.03;
-var pposx = 0;
-var pposy = 0
-var posx = 0;
-var posy = 0;
-var down = false;
-
-function mmove(e) {
-	if (down == false) return;
-	var currx = 0;
-	var curry = 0;
-	if (!e) var e = window.event;
-	if (e.pageX || e.pageY) 	{
-		currx = e.pageX;
-		curry = e.pageY;
-	}
-	else if (e.clientX || e.clientY) 	{
-		currx = e.clientX + document.body.scrollLeft
-			+ document.documentElement.scrollLeft;
-		curry = e.clientY + document.body.scrollTop
-			+ document.documentElement.scrollTop;
-	}
-	canvas.matrix = canvas.rotateY((currx-posx)/200);
-	pposx = posx;
-	pposy= posy;
-	posx = currx;
-	posy = curry;
+    <meta charset=utf-8 />
+    <meta name="author" content="http://weibo.com/zswang" />
+    <title>ace 3d examples</title>
+    <script src="../../scripts/ace-geometric.js"></script>
+    <script src="../../scripts/ace-3d.js"></script>
+    <script src="../../scripts/ace-path-simple.js"></script>
+    <script src="../../scripts/ace-string.js"></script>
+    <style>
+#canvas{
+    border: solid 1px #ccc;
 }
-function mdown(e) {
-	down = true;
-	vR = 0;
-	if (!e) var e = window.event;
-	if (e.pageX || e.pageY) 	{
-		posx = e.pageX;
-		posy = e.pageY;
-	}
-	else if (e.clientX || e.clientY) 	{
-		posx = e.clientX + document.body.scrollLeft
-			+ document.documentElement.scrollLeft;
-		posy = e.clientY + document.body.scrollTop
-			+ document.documentElement.scrollTop;
-	}
+#div{
+    width: 500px;
+    height: 500px;
 }
-function mup(e) {
-	down = false;
-	var currx = 0;
-	var curry = 0;
-	if (!e) var e = window.event;
-	if (e.pageX || e.pageY){
-		currx = e.pageX;
-		curry = e.pageY;
-	}
-	else if (e.clientX || e.clientY){
-		currx = e.clientX + document.body.scrollLeft
-			+ document.documentElement.scrollLeft;
-		curry = e.clientY + document.body.scrollTop
-			+ document.documentElement.scrollTop;
-	}
-	
-	vR = (currx-pposx) / 200;
-}
-function loop() {
-	canvas.matrix = canvas.rotateY(vR);
-	canvas.paint();
-	setTimeout("loop();", 30);
-}
-function drawHelix() {
-	var m = scale(100, 20, 100, identity());
-	var curve = [
-		[0, 0, 0.5], 
-		[0.5, 0.2, 0.3],
-		[1, 2, 3],
-		[1, 5, 1]
-	];
-	var count = 53;
-	var tightness = 3;
-	for (var t = 0; t < count; t++) {
-		var point = Ace3D.bezier(curve, t / count);
-		var p = canvas.addPoint(point[0],
-			point[1],
-			point[2],
-			"*",
-			m);
-	}
-}
-
-function init() {
-	canvas = new JS3D("canvas", -20);
-	canvas.matrix = identity();
-	canvas.matrix = canvas.translate(canvas.width / 2, 0, -200);
-	drawHelix(identity());
-	loop();
-}
-	</script>
+    </style>
 </head>
-<body onLoad="init();">
-	<div id="canvas" style="
-		position: absolute;
-		left: 10px;
-		top: 80px;
-		width: 500px;
-		height: 480px;
-		border: 1px blue outset;
-		background-color: blue;
-		cursor:move;"
-		onMouseDown="mdown(event);"
-		onMouseUp="mup(event);"
-		onMouseMove="mmove(event);"
-		></div>
+<body>
+    <span id="info"></span>
+    <div id="div"></div>
+    <script>
+void function(){
+    /**
+     * 立方体示例
+     * @see http://www.cnblogs.com/index-html/archive/2011/03/03/js-cube.html
+     * @author 王集鹄(WangJihu,http//weibo.com/zswang)
+     * @version 2013-05-22
+     */
+    var cubePath = AcePath.create({
+        parent: 'div',
+        stroke: '#ff0000',
+        strokeWidth: 3
+    });
+    var radius = 20;
+    /**
+     *    4-------5
+     *   /|      /|
+     *  0-------1 |
+     *  | |     | |
+     *  | 7- - -|-6
+     *  |/      |/
+     *  3-------2
+     */
+     var cubePoints = [
+        [-1, -1, -1], // 0
+        [+1, -1, -1], // 1
+        [+1, +1, -1], // 2
+        [-1, +1, -1], // 3
+        [-1, -1, +1], // 4
+        [+1, -1, +1], // 5
+        [+1, +1, +1], // 6
+        [-1, +1, +1] // 7
+    ];
+    
+    for (var i = 0; i < cubePoints.length; i++){
+        for (var j = 0; j < 3; j++){
+            cubePoints[i][j] *= radius;
+        }
+    }
+    
+    var pathTemplate = '\
+M #{0} L #{1} #{2} #{3} Z \
+M #{4} L #{5} #{6} #{7} Z \
+M #{0} L #{4}\
+M #{1} L #{5}\
+M #{2} L #{6}\
+M #{3} L #{7}\
+';
 
+    var rotation = 0;
+    var distance = 1000;
+    var frameTime = new Date, frameCount = 0, fps = 0; // fps
+    function render(){
+        if (new Date - frameTime > 1000){ // fps
+            frameTime = new Date;
+            fps = frameCount;
+            frameCount = 0;
+        } else frameCount++;
+        document.getElementById('info').innerHTML = "fps:" + fps;
+        
+        var temp = [];
+        for (var i = 0; i < cubePoints.length; i++){
+            var p = cubePoints[i].slice();
+            Ace3D.rotateX(p, rotation);
+            Ace3D.rotateY(p, rotation);
+            Ace3D.rotateZ(p, rotation);
+            var t = Ace3D.projection(p, 150, distance);
+            t[0] += 250;
+            t[1] += 250;
+            temp.push(t);
+        }
+
+        cubePath.attr('path', AceString.format(pathTemplate, temp));
+        rotation += Math.PI / 90.0;
+    }    
+    //render();//debug
+    setInterval(render, 1000 / 30);
+}();
+    </script>
 </body>
+</html>
