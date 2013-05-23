@@ -56,8 +56,6 @@ void function(){
     var points = [];
     for (var i = 0; i < count; i++){
         points.push(AceGeometric.bezier(curve, i / count))
-    }
-    for (var i = 0; i < count; i++){
         points.push(Ace3D.rotateX(AceGeometric.bezier(curve, i / count), Math.PI))
         points.push(Ace3D.rotateY(AceGeometric.bezier(curve, i / count), Math.PI))
         points.push(Ace3D.rotateZ(AceGeometric.bezier(curve, i / count), Math.PI))

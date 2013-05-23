@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <meta name="author" content="http://weibo.com/zswang" />
+    <title>ace 3d examples</title>
+    <script src="../../scripts/ace-geometric.js"></script>
+    <script src="../../scripts/ace-3d.js"></script>
+    <script src="../../scripts/ace-path-simple.js"></script>
+    <script src="../../scripts/ace-string.js"></script>
+    <style>
+#canvas{
+    border: solid 1px #ccc;
+}
+#div{
+    width: 500px;
+    height: 500px;
+}
+    </style>
+</head>
+<body>
+    <span id="info"></span>
+    <div id="div"></div>
+    <script>
+void function(){
+    /**
+     * 获取椭圆弧线的坐标点集合
+     * x,y 左上角坐标
+     * w,h 高宽
+     */
+    function ellipse(x, y, w, h){
+        var kappa = 0.5522848,
+            ox = (w / 2) * kappa, // control point offset horizontal
+            oy = (h / 2) * kappa, // control point offset vertical
+            xe = x + w, // x-end
+            ye = y + h, // y-end
+            xm = x + w / 2, // x-middle
+            ym = y + h / 2; // y-middle
+        return [
+            [x, ym],
+            [x, ym - oy],
+            [xm - ox, y],
+            [xm, y],
+            [xm + ox, y],
+            [xe, ym - oy],
+            [xe, ym],
+            [xe, ym + oy],
+            [xm + ox, ye],
+            [xm, ye],
+            [xm - ox, ye],
+            [x, ym + oy]
+        ];
+        // [8], [9], [10] 下方
+    }
+
+    /**
+     * 球体演示
+     * @see http://www.cnblogs.com/index-html/archive/2011/03/03/js-cube.html
+     * @author 王集鹄(WangJihu,http//weibo.com/zswang)
+     * @version 2013-05-22
+     */
+    var cubePath = AcePath.create({
+        parent: 'div',
+        stroke: '#0000ff',
+        strokeWidth: 3
+    });
+    var radius = 40;
+    var cubes = [];
+    var cubePoints = ellipse(-radius / 2, -radius / 2, radius, radius);
+    //cubes.push(cubePoints);
+
+    var count = 12;
+    for (var i = 0; i < cubePoints.length; i++){
+        cubePoints[i][2] = 0;
+    }
+    for (var j = 0; j < count; j++){
+        var items = [];
+        cubes.push(items);
+        for (var i = 0; i < cubePoints.length; i++){
+            items.push(Ace3D.rotateX(cubePoints[i].slice(), Math.PI * 2 * (j / count)));
+        }
+        var items = [];
+        cubes.push(items);
+        for (var i = 0; i < cubePoints.length; i++){
+            items.push(Ace3D.rotateY(cubePoints[i].slice(), Math.PI * 2 * (j / count)));
+        }
+        var items = [];
+        cubes.push(items);
+        for (var i = 0; i < cubePoints.length; i++){
+            var p = Ace3D.rotateX(cubePoints[i].slice(), Math.PI / 2);
+            items.push(Ace3D.rotateZ(p, Math.PI * 2 * (j / count)));
+        }
+    }
+
+    var pathTemplate = '\
+M #{0} \
+C #{1} #{2} #{3} \
+C #{4} #{5} #{6} \
+C #{7} #{8} #{9} \
+C #{10} #{11} #{0} Z\
+';
+
+    var rotation = 0;
+    var distance = 1000;
+    var frameTime = new Date, frameCount = 0, fps = 0; // fps
+    function render(){
+        if (new Date - frameTime > 1000){ // fps
+            frameTime = new Date;
+            fps = frameCount;
+            frameCount = 0;
+        } else frameCount++;
+        document.getElementById('info').innerHTML = "fps:" + fps;
+        
+        var temp = [];
+        for (var j = 0; j < cubes.length; j++){
+            var items = [];
+            temp.push(items);
+            for (var i = 0; i < cubePoints.length; i++){
+                var p = cubes[j][i].slice();
+                Ace3D.rotateX(p, rotation);
+                Ace3D.rotateY(p, rotation);
+                Ace3D.rotateZ(p, rotation);
+                var t = Ace3D.projection(p, 150, distance);
+                t[0] += 250;
+                t[1] += 250;
+                items.push(t);
+            }
+        }
+        var path = [];
+        for (var i = 0; i < temp.length; i++){
+            path.push(AceString.format(pathTemplate, temp[i]));
+        }
+        cubePath.attr('path', path.join(' '));
+        rotation += Math.PI / 90.0;
+    }    
+    //render();//debug
+    setInterval(render, 1000 / 30);
+}();
+    </script>
+</body>
+</html>
