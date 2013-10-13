@@ -260,7 +260,7 @@ void function(){
             temp.push(t);
             spans[i].style.left = parseInt(t[0]) + 'px';
             spans[i].style.top = parseInt(t[1]) + 'px';
-            spans[i].style.fontSize = parseInt(p[2] + 5) + 'px';
+            spans[i].style.fontSize = Math.max(1, parseInt(p[2] + 5)) + 'px';
         }
         if (checkboxReference.checked) {
             referencePath.attr('path', AceString.format(referenceTemplate, temp));
