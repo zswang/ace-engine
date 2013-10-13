@@ -9,10 +9,12 @@
     <script src="../../scripts/ace-path-simple.js"></script>
     <script src="../../scripts/ace-string.js"></script>
     <style>
+textarea {
+    width: 500px;
+    height: 150px;
+}
 #canvas {
     border: solid 1px #ccc;
-}
-#div {
     width: 500px;
     height: 500px;
 }
@@ -25,10 +27,98 @@
     </style>
 </head>
 <body>
+    <script id="colorItems" type="text/data">
+#000000
+#FF0000
+#00FF00
+#0000FF
+#FF00FF
+#00FFFF
+#FFFF00
+    </script>
+    <script id="templateItems" type="text/data">
+清空
+
+十二面体
+M #{0} L #{1} #{18} #{10} #{16} Z
+M #{0} L #{12} #{4} #{5} #{16} Z
+M #{0} L #{1} #{14} #{8} #{12} Z
+M #{5} L #{17} #{11} #{10} #{16} Z
+M #{8} L #{9} #{15} #{6} #{14} Z
+M #{8} L #{9} #{13} #{4} #{12} Z
+M #{10} L #{11} #{19} #{7} #{18} Z
+M #{4} L #{5} #{17} #{2} #{13} Z
+M #{2} L #{3} #{19} #{11} #{17} Z
+M #{2} L #{3} #{15} #{9} #{13} Z
+M #{6} L #{7} #{18} #{1} #{14} Z
+
+星星体
+M #{1} L #{6} #{3} #{17} #{16} Z
+M #{14} L #{15} #{2} #{5} #{0} Z
+M #{12} L #{9} #{3} #{11} #{16} Z
+M #{12} L #{14} #{7} #{11} #{5} Z
+M #{9} L #{4} #{16} #{18} #{6} Z
+M #{8} L #{1} #{10} #{17} #{13} Z
+M #{8} L #{15} #{19} #{10} #{0} Z 
+M #{4} L #{0} #{18} #{19} #{2} Z
+M #{12} L #{1} #{7} #{3} #{13} Z
+M #{8} L #{4} #{17} #{19} #{6} Z
+M #{5} L #{10} #{7} #{15} #{13} Z
+M #{9} L#{14} #{18} #{11} #{2} Z
+
+星面体
+M #{1} L #{3} #{16} #{6} #{17} Z
+M #{14} L #{2} #{0} #{15} #{5} Z
+M #{12} L #{3} #{16} #{9} #{11} Z
+M #{12} L #{7} #{5} #{14} #{11} Z
+M #{9} L #{16} #{6} #{4} #{18} Z
+M #{8} L #{10} #{13} #{1} #{17} Z
+M #{8} L #{19} #{0} #{15} #{10} Z 
+M #{4} L #{18} #{2} #{0} #{19} Z
+M #{12} L #{7} #{13} #{1} #{3} Z
+M #{8} L #{17} #{6} #{4} #{19} Z
+M #{5} L #{7} #{13} #{10} #{15} Z
+M #{9} L #{18} #{2} #{14} #{11} Z
+
+星花体
+M #{1} C #{6} #{3} #{17} C #{16} #{1} #{6} C #{3} #{17} #{16} C #{1} #{6} #{3} C #{17} #{16} #{1}
+M #{14} C #{15} #{2} #{5} C #{0} #{14} #{15} C #{2} #{5} #{0} C #{14} #{15} #{2} C #{5} #{0} #{14}
+M #{12} C #{9} #{3} #{11} C #{16} #{12} #{9} C #{3} #{11} #{16} C #{12} #{9} #{3} C #{11} #{16} #{12}
+M #{12} C #{14} #{7} #{11} C #{5} #{12} #{14} C #{7} #{11} #{5} C #{12} #{14} #{7} C #{11} #{5} #{12}
+M #{9} C #{4} #{16} #{18} C #{6} #{9} #{4} C #{16} #{18} #{6} C #{9} #{4} #{16} C #{18} #{6} #{9}
+M #{8} C #{1} #{10} #{17} C #{13} #{8} #{1} C #{10} #{17} #{13} C #{8} #{1} #{10} C #{17} #{13} #{8}
+M #{8} C #{15} #{19} #{10} C #{0} #{8} #{15} C #{19} #{10} #{0} C #{8} #{15} #{19} C #{10} #{0} #{8} 
+M #{4} C #{0} #{18} #{19} C #{2} #{4} #{0} C #{18} #{19} #{2} C #{4} #{0} #{18} C #{19} #{2} #{4}
+M #{12} C #{1} #{7} #{3} C #{13} #{12} #{1} C #{7} #{3} #{13} C #{12} #{1} #{7} C #{3} #{13} #{12}
+M #{8} C #{4} #{17} #{19} C #{6} #{8} #{4} C #{17} #{19} #{6} C #{8} #{4} #{17} C #{19} #{6} #{8}
+M #{5} C #{10} #{7} #{15} C #{13} #{5} #{10} C #{7} #{15} #{13} C #{5} #{10} #{7} C #{15} #{13} #{5}
+M #{9} C #{14} #{18} #{11} C #{2} #{9} #{14} C #{18} #{11} #{2} C #{9} #{14} #{18} C #{11} #{2} #{9}
+
+刺星体
+M #{1} C #{3} #{16} #{6} C #{17} #{1} #{3} C #{16} #{6} #{17} C #{1} #{3} #{16} C #{6} #{17} #{1}
+M #{14} C #{2} #{0} #{15} C #{5} #{14} #{2} C #{0} #{15} #{5} C #{14} #{2} #{0} C #{15} #{5} #{14}
+M #{12} C #{3} #{16} #{9} C #{11} #{12} #{3} C #{16} #{9} #{11} C #{12} #{3} #{16} C #{9} #{11} #{12}
+M #{12} C #{7} #{5} #{14} C #{11} #{12} #{7} C #{5} #{14} #{11} C #{12} #{7} #{5} C #{14} #{11} #{12}
+M #{9} C #{16} #{6} #{4} C #{18} #{9} #{16} C #{6} #{4} #{18} C #{9} #{16} #{6} C #{4} #{18} #{9}
+M #{8} C #{10} #{13} #{1} C #{17} #{8} #{10} C #{13} #{1} #{17} C #{8} #{10} #{13} C #{1} #{17} #{8}
+M #{8} C #{19} #{0} #{15} C #{10} #{8} #{19} C #{0} #{15} #{10} C #{8} #{19} #{0} C #{15} #{10} #{8} 
+M #{4} C #{18} #{2} #{0} C #{19} #{4} #{18} C #{2} #{0} #{19} C #{4} #{18} #{2} C #{0} #{19} #{4}
+M #{12} C #{7} #{13} #{1} C #{3} #{12} #{7} C #{13} #{1} #{3} C #{12} #{7} #{13} C #{1} #{3} #{12}
+M #{8} C #{17} #{6} #{4} C #{19} #{8} #{17} C #{6} #{4} #{19} C #{8} #{17} #{6} C #{4} #{19} #{8}
+M #{5} C #{7} #{13} #{10} C #{15} #{5} #{7} C #{13} #{10} #{15} C #{5} #{7} #{13} C #{10} #{15} #{5}
+M #{9} C #{18} #{2} #{14} C #{11} #{9} #{18} C #{2} #{14} #{11} C #{9} #{18} #{2} C #{14} #{11} #{9}
+    </script>
     <span id="info"></span>
-    <div id="div"></div>
-    <label>显示参考线<input type="checkbox" id="checkboxReference" /></label>
-    <label>显示序号<input type="checkbox" id="checkboxNumber" /></label>
+    <div id="canvas"></div>
+    <div id="style"></div>
+    <div>
+        <div id="tools"></div>
+        <textarea id="editor"></textarea>
+    </div>
+    <div>
+        <label>显示参考线<input type="checkbox" id="checkboxReference" /></label>
+        <label>显示序号<input type="checkbox" id="checkboxNumber" /></label>
+    </div>
     <script>
 void function(){
     /**
@@ -39,6 +129,12 @@ void function(){
      */
 
     // 若以正十二面体的中心为(0,0,0)，各顶点的坐标为{(0,±1/φ,±φ), (±1/φ,±φ,0), (±φ,0,±1/φ), (±1,±1,±1)}，其中φ = (1+√5)/2，
+
+    // 交换
+    // /M\s*#\{(\d+)\}\s*l\s*#\{(\d+)\}\s*#\{(\d+)\}\s*#\{(\d+)\}\s*#\{(\d+)\}\s*z/ig
+    // "M #{$1} L #{$3} #{$5} #{$2} #{$4} Z"
+
+    // "M #{$1} C #{$2} #{$3} #{$4} C #{$5} #{$1} #{$2} C #{$3} #{$4} #{$5} C #{$1} #{$2} #{$3} C #{$4} #{$5} #{$1}"
     
     var phi = (1 + Math.sqrt(5)) / 2;
     var endpoints = [
@@ -73,26 +169,61 @@ void function(){
 
         [0, 0, 0] // 中心点
     ];
+
     // 参考线
     var referencePath = AcePath.create({
-        parent: 'div',
+        parent: 'canvas',
         stroke: '#0000ff',
         strokeWidth: 1
     });
     // 多面体
     var polyhedronPath = AcePath.create({
-        parent: 'div',
+        parent: 'canvas',
         stroke: '#ff0000',
         strokeWidth: 3
     });
+    var referenceTemplate = '';
+    function change() {
+        polyhedronTemplate = editor.value;
+    }
     var checkboxReference = document.getElementById('checkboxReference');
     var checkboxNumber = document.getElementById('checkboxNumber');
+    var editor = document.getElementById('editor');
+    var templateItems = document.getElementById('templateItems');
+    var colorItems = document.getElementById('colorItems');
+    var style = document.getElementById('style');
+    colorItems.innerHTML.replace(/#[\w]+/g, function(color) {
+        var button = document.createElement('button');
+        button.innerHTML = color;
+        button.style.color = color;
+        style.appendChild(button);
+        button.onclick = function() {
+            polyhedronPath.attr({
+                stroke: color
+            });
+        }
+    });
+    
+    var tools = document.getElementById('tools');
+    templateItems.innerHTML.replace(
+        /([\u4e00-\u9fa5]+)\s*([^\u4e00-\u9fa5]+)\s*/g,
+        function(all, title, template) {
+            var button = document.createElement('button');
+            button.innerHTML = title;
+            tools.appendChild(button);
+            button.onclick = function() {
+                editor.value = template;
+                change();
+            }
+        }
+    );
+    editor.onkeyup = change;
+    editor.oninput = change;
 
     var radius = 18;
-    var div = document.getElementById('div');
+    var canvas = document.getElementById('canvas');
     var spans = [];
     var polyhedronTemplate = '';
-    var referenceTemplate = '';
     for (var i = 0; i < endpoints.length; i++){
         endpoints[i][0] *= radius;
         endpoints[i][1] *= radius;
@@ -100,23 +231,11 @@ void function(){
         var span = document.createElement('span');
         span.innerHTML = i;
         span.className = 'number';
-        div.appendChild(span);
+        canvas.appendChild(span);
         spans.push(span);
 
         referenceTemplate += 'M #{20} L #{' + i + '} Z ';
     }
-
-    polyhedronTemplate += 'M #{0} L #{1} #{18} #{10} #{16} Z';
-    polyhedronTemplate += 'M #{0} L #{12} #{4} #{5} #{16} Z';
-    polyhedronTemplate += 'M #{0} L #{1} #{14} #{8} #{12} Z';
-    polyhedronTemplate += 'M #{5} L #{17} #{11} #{10} #{16} Z';
-    polyhedronTemplate += 'M #{8} L #{9} #{15} #{6} #{14} Z';
-    polyhedronTemplate += 'M #{8} L #{9} #{13} #{4} #{12} Z';
-    polyhedronTemplate += 'M #{10} L #{11} #{19} #{7} #{18} Z';
-    polyhedronTemplate += 'M #{4} L #{5} #{17} #{2} #{13} Z';
-    polyhedronTemplate += 'M #{2} L #{3} #{19} #{11} #{17} Z';
-    polyhedronTemplate += 'M #{2} L #{3} #{15} #{9} #{13} Z';
-    polyhedronTemplate += 'M #{6} L #{7} #{18} #{1} #{14} Z';
 
     var rotation = 0;
     var distance = 1000;
@@ -149,9 +268,9 @@ void function(){
             referencePath.attr('path', '');
         }
         if (checkboxNumber.checked) {
-            div.className = 'shownumber';
+            canvas.className = 'shownumber';
         } else {
-            div.className = 'hidenumber';
+            canvas.className = 'hidenumber';
         }
         polyhedronPath.attr('path', AceString.format(polyhedronTemplate, temp));
         rotation += Math.PI / 90.0;
