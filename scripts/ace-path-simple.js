@@ -101,7 +101,7 @@ void function(exports){
             //div.style.height = '100%';
             //div.style.width = '100%';
             div.innerHTML = format('\
-<v:shape class="ace_path_shape ace_vml" coordsize="1,1" stroked="#{stroked}" filled="#{filled}" path="#{path}">\
+<v:shape class="ace_path_shape ace_vml" coordsize="1000,1000" stroked="#{stroked}" filled="#{filled}" path="#{path}">\
     <v:stroke class="ace_vml" opacity="#{strokeOpacity}" color="#{stroke}" weight="#{strokeWidth}"></v:stroke>\
     <v:fill class="ace_vml" opacity="#{fillOpacity}" color="#{fill}"></v:fill>\
 </v:shape>', this);
@@ -154,7 +154,9 @@ void function(exports){
                         this.elementPath.setAttribute('d', value || 'M 0,0');
                     } else {
                         this.elementPath.path = String(value || 'M 0,0')
-                            .replace(/(\d+)\.\d+/g, '$1') // 清理小数
+                            .replace(/\d+(\.\d+)?/g, function(number){
+                                return parseInt(number * 1000);
+                            }) // 清理小数
                             .replace(/z/ig, 'X'); // 处理闭合
                     }
                     break;
