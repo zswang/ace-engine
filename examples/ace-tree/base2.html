@@ -10,10 +10,12 @@
 		<ul>
 			<script id="addressTemplate" type="text/template">
 			<li>
+				<button cmd="add">add</button>
+				<button cmd="red">red</button>
 				if (helper.getStatus("modify")){
 					<input type="text" value="#{text}"/><button cmd="ok">确定</button><button cmd="cancel">取消</button>
 				} else {
-					#{text}<button cmd="edit">编辑</button><button cmd="remove">删除</button>
+					<span style="background:#{helper.getStatus('red') ? 'red' : ''}">#{text}</span><button cmd="edit">编辑</button><button cmd="remove">删除</button>
 				}
 				if (this['source']){
 					if (helper.getStatus("loaded")){
@@ -91,6 +93,12 @@ void function(){
 		},
 		oncommand: function(command, node){ // 接受容器事件
 			switch(command){
+				case 'add':
+					node.appendChild({ text: 'new' + (+new Date) });
+					break;
+				case 'red':
+					node.setStatus('red', !node.getStatus('red'));
+					break;
 				case 'remove': // 收到移除命令 // 由cmd="remove"指定
 					node.remove();
 					break;

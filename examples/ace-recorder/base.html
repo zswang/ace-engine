@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../scripts/ace-recorder.js"></script>
+        <title>ace recorder examples</title>
+    </head>
+    <body>
+        <input type="button" value="start" id="buttonStart" />
+        <input type="button" value="stop" id="buttonStop" disabled />
+        <script>
+void function() {
+    var recorder = AceRecorder.create();
+    var buttonStart = document.getElementById('buttonStart');
+    var buttonStop = document.getElementById('buttonStop');
+    buttonStart.addEventListener('click', function() {
+        recorder.start();
+    });
+    buttonStop.addEventListener('click', function() {
+        recorder.stop();
+    });
+}();
+        </script>
+    </body>
+</html>
