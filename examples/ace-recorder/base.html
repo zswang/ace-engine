@@ -27,6 +27,7 @@ void function() {
             switch (data.command) {
                 case 'draw':
                     var buffer = data.buffer;
+                    context.save();
                     context.fillStyle = '#000000';
                     context.fillRect(0, 0, canvas.width, canvas.height);
                     context.beginPath();
@@ -37,6 +38,8 @@ void function() {
                     }
                     context.strokeStyle = '#FFFFFF';
                     context.stroke();
+                    context.closePath();
+                    context.restore();
                     break;
             }
         }
