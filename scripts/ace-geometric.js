@@ -18,6 +18,7 @@ void function(exports){
         min = math.min,
         max = math.max,
         atan = math.atan,
+        atan2 = math.atan2,
         sqrt = math.sqrt,
         pow = math.pow;
         
@@ -49,21 +50,7 @@ void function(exports){
      */
     function pointToAngle(origin, point, eccentricity){
         if (typeof eccentricity == 'undefined') eccentricity = 1;
-        if (point[0] == origin[0]){
-            if (point[1] > origin[1])
-                return PI * 0.5;
-            return PI * 1.5
-        } else if (point[1] == origin[1]){
-            if (point[0] > origin[0])
-                return 0;
-            return PI;
-        }
-        var t = atan((origin[1] - point[1]) / (origin[0] - point[0]) * eccentricity);
-        if (point[0] > origin[0] && point[1] < origin[1])
-            return t + 2 * PI;
-        if (point[0] > origin[0] && point[1] > origin[1])
-            return t;
-        return t + PI;
+        return atan2((point[1] - origin[1]) * eccentricity, point[0] - origin[0]);
     }
     
     /**
