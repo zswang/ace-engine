@@ -4,20 +4,56 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <script src="../../scripts/ace-recorder.js"></script>
         <title>ace recorder examples</title>
+        <style>
+canvas {
+    border: 1px solid blue;
+}
+        </style>
     </head>
     <body>
-        <input type="button" value="start" id="buttonStart" />
-        <input type="button" value="stop" id="buttonStop" disabled />
+        <div>
+            <input type="button" value="start" id="buttonStart" />
+            <input type="button" value="stop" id="buttonStop" disabled />
+        </div>
+        <canvas width="1000" height="500"></canvas>
         <script>
 void function() {
-    var recorder = AceRecorder.create();
+    var recorder = AceRecorder.create({
+        onmessage: function(e) {
+            var data = e.data;
+            if (!data) {
+                return;
+            }
+            switch (data.command) {
+                case 'draw':
+                    var buffer = data.buffer;
+                    context.fillStyle = '#000000';
+                    context.fillRect(0, 0, canvas.width, canvas.height);
+                    context.beginPath();
+                    var len = Math.min(canvas.width, buffer.length);
+                    for (var i = 0; i < len; i++) {
+                        context.moveTo(i, -buffer[i] * canvas.height / 2 + canvas.height / 2);
+                        context.lineTo(i, +buffer[i] * canvas.height / 2 + canvas.height / 2);
+                    }
+                    context.strokeStyle = '#FFFFFF';
+                    context.stroke();
+                    break;
+            }
+        }
+    });
+    var canvas = document.querySelector('canvas');
+    var context = canvas.getContext('2d');
     var buttonStart = document.getElementById('buttonStart');
     var buttonStop = document.getElementById('buttonStop');
     buttonStart.addEventListener('click', function() {
         recorder.start();
+        buttonStart.disabled = true;
+        buttonStop.disabled = false;
     });
     buttonStop.addEventListener('click', function() {
         recorder.stop();
+        buttonStop.disabled = true;
+        buttonStart.disabled = false;
     });
 }();
         </script>

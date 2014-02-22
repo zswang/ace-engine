@@ -22,19 +22,26 @@ void function (exports) {
         var recording;
         var worker;
         var onmessage = options.onmessage;
+        var onerror = options.onerror;
+        var oninit = options.init;
         var input;
         var node;
+        var initCompleted;
 
-        this.start = function() {
-            if (recording) {
+        function init() {
+            if (initCompleted) {
                 return;
             }
-            recording = true;
+            initCompleted = true;
             getUserMedia.call(navigator, { audio: true }, function(stream) {
                 worker = new Worker(workerPath);
-                worker.onmessage = onmessage;
+                worker.onmessage = function(e) {
+                    console.log('worker.onmessage');
+                    if (onmessage) {
+                        onmessage(e);
+                    }
+                };
                 input = context.createMediaStreamSource(stream);
-                input.connect(context.destination);
                 node = (context.createScriptProcessor ||
                     context.createJavaScriptNode).call(
                     context, bufferLen, 2, 2);
@@ -49,13 +56,34 @@ void function (exports) {
                         ]
                     });
                 };
-                input.connect(node);
-                node.connect(input.context.destination); // this should not be necessary
+
+                if (oninit) {
+                    oninit();
+                }
+                connect();
             }, function(e) {
                 if (onerror) {
                     onerror(e);
                 }
-            });        
+            });  
+        }
+
+        function connect() {
+            input.connect(node);
+            input.connect(context.destination);
+            node.connect(input.context.destination); // this should not be necessary
+        }
+
+        this.start = function() {
+            if (recording) {
+                return;
+            }
+            recording = true;
+            if (initCompleted) {
+                connect();
+            } else {
+                init();
+            }
         };
 
         this.stop = function() {
@@ -64,6 +92,7 @@ void function (exports) {
             }
             recording = false;
             input.disconnect();
+            node.disconnect();
         };
 
         this.postMessage = function(data) {
@@ -71,7 +100,11 @@ void function (exports) {
                 return;
             }
             worker.postMessage(data);
-        }
+        };
+
+        this.getRecording = function() {
+            return recording;
+        };
     }
 
     exports.create = function(options) {
