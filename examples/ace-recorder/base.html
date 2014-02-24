@@ -27,14 +27,16 @@ void function() {
             switch (data.command) {
                 case 'draw':
                     var buffer = data.buffer;
+                    var amplitude = canvas.height / 2;
                     context.save();
                     context.fillStyle = '#000000';
                     context.fillRect(0, 0, canvas.width, canvas.height);
                     context.beginPath();
                     var len = Math.min(canvas.width, buffer.length);
                     for (var i = 0; i < len; i++) {
-                        context.moveTo(i, -buffer[i] * canvas.height / 2 + canvas.height / 2);
-                        context.lineTo(i, +buffer[i] * canvas.height / 2 + canvas.height / 2);
+                        var offset = buffer[i] * amplitude;
+                        context.moveTo(i, amplitude - offset);
+                        context.lineTo(i, amplitude + offset);
                     }
                     context.strokeStyle = '#FFFFFF';
                     context.stroke();

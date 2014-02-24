@@ -36,7 +36,6 @@ void function (exports) {
             getUserMedia.call(navigator, { audio: true }, function(stream) {
                 worker = new Worker(workerPath);
                 worker.onmessage = function(e) {
-                    console.log('worker.onmessage');
                     if (onmessage) {
                         onmessage(e);
                     }
@@ -70,8 +69,7 @@ void function (exports) {
 
         function connect() {
             input.connect(node);
-            input.connect(context.destination);
-            node.connect(input.context.destination); // this should not be necessary
+            node.connect(input.context.destination);
         }
 
         this.start = function() {
