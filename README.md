@@ -14,4 +14,10 @@ ace-engine
 ### AceEditor
 文本编辑器常用的处理方法
 
+### AcePath
+兼容IE的图形路径组件
+
+### AceRecorder
+音频采集组件
+
 HTML visualization development
