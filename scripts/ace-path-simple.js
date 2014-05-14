@@ -13,6 +13,10 @@ void function(exports){
      */
     var 
         ie = document.all && document.attachEvent,
+        /**
+         * IE 放大的倍数
+         */
+        ieZoom = 1000,
         /*
          * 是否ie9+
          */
@@ -100,8 +104,9 @@ void function(exports){
             this.stroked = this.stroke == 'none' ? 'f' : 't';
             //div.style.height = '100%';
             //div.style.width = '100%';
+            this.zoom = ieZoom;
             div.innerHTML = format('\
-<v:shape class="ace_path_shape ace_vml" coordsize="1000,1000" stroked="#{stroked}" filled="#{filled}" path="#{path}">\
+<v:shape class="ace_path_shape ace_vml" coordsize="#{zoom},#{zoom}" stroked="#{stroked}" filled="#{filled}" path="#{path}">\
     <v:stroke class="ace_vml" opacity="#{strokeOpacity}" color="#{stroke}" weight="#{strokeWidth}"></v:stroke>\
     <v:fill class="ace_vml" opacity="#{fillOpacity}" color="#{fill}"></v:fill>\
 </v:shape>', this);
@@ -155,7 +160,7 @@ void function(exports){
                     } else {
                         this.elementPath.path = String(value || 'M 0,0')
                             .replace(/\d+(\.\d+)?/g, function(number){
-                                return parseInt(number * 1000);
+                                return parseInt(number * ieZoom);
                             }) // 清理小数
                             .replace(/z/ig, 'X'); // 处理闭合
                     }
@@ -228,6 +233,6 @@ void function(exports){
 .ace_path_panel{width:100%;height:100%;overflow:hidden;padding:0;margin:0;position:relative;}\
 ';
     }
-    
+
     exports.create = create;
 }(AcePath);

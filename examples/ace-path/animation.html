@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <meta name="author" content="http//weibo.com/zswang" />
+    <title>Demo</title>
+    <script src="../../scripts/ace-path-data.js"></script>
+    <script src="../../scripts/ace-path-simple.js"></script>
+    <style>
+body, div {
+    padding: 0;
+    margin: 0;
+}
+#canvas, #canvas2 {
+    ownerflow: hidden;
+    width: 500px;
+    height: 500px;
+    border: solid 1px black;
+    display: inline-block;
+}
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <div id="canvas2"></div>
+    <script>
+void function() {
+    var path = AcePath.create({
+        parent: 'canvas',
+        fill: 'none',
+        stroke: 'black'
+    });
+    var path2 = AcePath.create({
+        parent: 'canvas2',
+        fill: 'none',
+        stroke: 'black'
+    });
+
+
+    path.attr({
+        path: 'M 100,100 L 100,300 C 200,200 154,23 12,10 Z'
+    });
+    path2.attr({
+        path: AcePathData.stringify(AcePathData.parseCurve(path.attr('path')))
+    });
+}();
+    </script>
+</body>
+</html>
