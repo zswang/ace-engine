@@ -9,7 +9,7 @@ void function(exports) {
      * @copyright www.baidu.com
      */
 
-    function l2c(p1, p2) {
+    function lineToCurve(p1, p2) {
         return [[p1[0], p1[1]], [p2[0], p2[1]], [p2[0], p2[1]]];
     }
 
@@ -97,10 +97,10 @@ void function(exports) {
 					]]);
     				break;
     			case 'Z':
-    				result.push(['C', l2c(moved, start)]);
+    				result.push(['C', lineToCurve(moved, start)]);
     				break;
     			case 'L':
-    			 	result.push(['C', l2c(start, item[1][0])]);
+    			 	result.push(['C', lineToCurve(start, item[1][0])]);
     				break;
     		}
     	}
@@ -130,7 +130,7 @@ void function(exports) {
     		}
     		var item2 = c2[index];
     		if (!item2) {
-    			c2.splice(index, 0, ["C", l2c(m2, m2)]);
+    			c2.splice(index, 0, ["C", lineToCurve(m2, m2)]);
     			return true;
     		}
     		switch (item1[0]) {
