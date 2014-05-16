@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <meta name="author" content="http//weibo.com/zswang" />
+    <title>Demo</title>
+    <script src="../../scripts/ace-path-simple.js"></script>
+    <style>
+body, div {
+    padding: 0;
+    margin: 0;
+}
+#canvas {
+    ownerflow: hidden;
+    width: 500px;
+    height: 500px;
+    border: solid 1px black;
+    display: inline-block;
+}
+#log {
+    width: 480px;
+    height: 50px;
+}
+    </style>
+</head>
+<body>
+    <div id="canvas"></div>
+    <textarea id="log"></textarea>
+    <script>
+void function(){
+    var 
+        math = Math,
+        cos = math.cos,
+        sin = math.sin,
+        PI = math.PI,
+        PI2 = PI * 2,
+        min = math.min,
+        max = math.max,
+        atan = math.atan,
+        atan2 = math.atan2,
+        sqrt = math.sqrt,
+        pow = math.pow;
+    /**
+     * 计算点的角度
+     * @param {Array} origin 圆心坐标
+     * @param {Array} point 点坐标
+     * @param {Number} eccentricity 离心率
+     * @return {Number} 返回角度,单位弧度
+     */
+    function pointToAngle(origin, point, eccentricity){
+        if (typeof eccentricity == 'undefined') eccentricity = 1;
+        return atan2((point[1] - origin[1]) * eccentricity, point[0] - origin[0]);
+    }
+    /**
+     * 格式化函数
+     * @param {String} template 模板
+     * @param {Object} json 数据项
+     */
+    function format(template, json) {
+        return template.replace(/#\{(.*?)\}/g, function(all, key) {
+            return json && (key in json) ? json[key] : "";
+        });
+    }
+    /**
+     * 计算点到点之间的距离
+     * @param {Array[Number,Number]} a 坐标1
+     * @param {Array[Number,Number]} b 坐标2
+     * @return {Number} 返回点与点间的距离
+     */ 
+    function pointToPoint(a, b){
+          return sqrt(pow(a[0] - b[0], 2) + pow(a[1] - b[1], 2));
+    }
+    /**
+     * 旋转一个点坐标
+     * @param {Array} point 目标坐标
+     * @param {Array} center 中心点
+     * @param {Number} angle 选择角度，单位:弧度
+     * @return {Array} 返回旋转后的坐标
+     */
+    function rotatePoint(point, center, angle){
+        var radius = pointToPoint(center, point);
+        angle = pointToAngle(center, point) + angle;
+        return [
+            parseInt(center[0] + Math.cos(angle) * radius),
+            parseInt(center[1] + Math.sin(angle) * radius)
+        ];
+    }
+    /**
+     * 获取椭圆弧线的坐标点集合
+     * x,y 左上角坐标
+     * w,h 高宽
+     */
+    function ellipse(x, y, w, h){
+        var kappa = 0.5522848,
+            ox = (w / 2) * kappa, // control point offset horizontal
+            oy = (h / 2) * kappa, // control point offset vertical
+            xe = x + w, // x-end
+            ye = y + h, // y-end
+            xm = x + w / 2, // x-middle
+            ym = y + h / 2; // y-middle
+        return [
+            [x, ym],
+            [x, ym - oy],
+            [xm - ox, y],
+            [xm, y],
+            [xm + ox, y],
+            [xe, ym - oy],
+            [xe, ym],
+            [xe, ym + oy],
+            [xm + ox, ye],
+            [xm, ye],
+            [xm - ox, ye],
+            [x, ym + oy]
+        ];
+        // [8], [9], [10] 下方
+    }
+    /**
+     * 旋转坐标
+     * @param {Array} point 目标坐标
+     * @param {Array} player 相对玩家
+     */
+    function flipPoint(point, player, size) {
+        switch(player) {
+            case 0:
+                return [point[0], point[1]];
+            case 1:
+                return [size - point[1] - 1, point[0]];
+            case 2:
+                return [size - point[0] - 1, size - point[1] - 1];
+            case 3:
+                return [point[1], size - point[0] - 1];
+        }
+    }
+    /**
+     * 飞行棋
+     * @see 
+     * @author 王集鹄(wangjihu,http//weibo.com/zswang)
+     * @version 2013-11-17
+     */
+    /**
+     * 棋盘大小，单位：个
+     */
+    var boardSize = 15;
+    /**
+     * 棋格大小，单位：像素
+     */
+    var floorSize = 32;
+    /**
+     * 玩家数
+     */
+    var playerCount = 4;
+    /**
+     * 中心坐标
+     */
+    var center = [parseInt(boardSize / 2), parseInt(boardSize / 2)];
+   
+    /**
+     * 每个隔颜色 <key>: point, <value>: color
+     */
+    var colorPoints = {};
+    void function() { // buildColorPoints
+        var colorTemplate = [[0, 13], [1, 13], [1, 14], [0, 14], [3, 14], [4, 13], [2, 10], [0, 8], [0, 4], [4, 3], [5, 0], [9, 0], [10, 3], [14, 4], [14, 8], [12, 10], [10, 13], [7, 14], [7, 13], [7, 12], [7, 11], [7, 10], [7, 9], [7, 8]];
+        for (var i = 0; i < playerCount; i++) {
+            for (var j = 0; j < colorTemplate.length; j++) {
+                colorPoints[flipPoint(colorTemplate[j], i, boardSize)] = i;
+            }
+        }
+    }();
+
+    /**
+     * 移动的顺序
+     */
+    var stepPoints = [];
+    void function() {
+        var stepTemplate = [[3, 14], [4, 14], [4, 13], [4, 12], [4, 11], [3, 10], [2, 10], [1, 10], [0, 10], [0, 9], [0, 8], [0, 7], [0, 6], [0, 5], [0, 4], [1, 4], [2, 4], [3, 4], [4, 3], [4, 2], [4, 1], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [10, 1], [10, 2], [10, 3], [11, 4], [12, 4], [13, 4], [14, 4], [14, 5], [14, 6], [14, 7], [14, 8], [14, 9], [14, 10], [13, 10], [12, 10], [11, 10], [10, 11], [10, 12], [10, 13], [10, 14], [9, 14], [8, 14], [7, 14], [7, 13], [7, 12], [7, 11], [7, 10], [7, 9], [7, 8]];
+        for (var i = 0; i < playerCount; i++) {
+            var items = [];
+            for (var j = 0; j < stepTemplate.length; j++) {
+                items.push(flipPoint(stepTemplate[j], i, boardSize));
+            }
+            stepPoints.push(items);
+        }
+    }();
+    
+    /**
+     * 菱形路径
+     * @param point 格子坐标
+     * @param player 玩家
+     */
+    function diamond(point, player) {
+        var points = [
+            [0, 0],
+            [0.5 * floorSize, 0],
+            [floorSize, 0.5 * floorSize],
+            [floorSize, floorSize],
+            [0, floorSize]
+        ];
+        for (var i = 0; i < points.length; i++) {
+            points[i] = flipPoint(points[i], player, floorSize + 1);
+            points[i][0] += point[0] * floorSize;
+            points[i][1] += point[1] * floorSize;
+        }
+        return format("M #{0} L #{1} #{2} #{3} #{4} Z", points);
+    }
+
+    /**
+     * 棋盘
+     */
+    var pathBoard = AcePath.create({
+        parent: 'canvas'
+    });
+
+    /**
+     * 每个玩家的格子路径
+     */
+    var pathPlayers = [];
+
+    /**
+     * 矩形路径模板
+     */
+    var rectTemplate = "M #{0},#{1} L #{2},#{1} #{2},#{3} #{0},#{3} Z";
+    /**
+     * 圆形路径模板
+     */
+    var ellipseTemplate = '\
+M #{0} \
+C #{1} #{2} #{3} \
+C #{4} #{5} #{6} \
+C #{7} #{8} #{9} \
+C #{10} #{11} #{0} Z\
+';
+
+    void function() { // buildPathPlayer
+        var colorTemplate = ['#F5005C', '#F3C100', '#7AC92C', '#0EB3E7'];
+        var paths = [];
+        for (var i = 0; i < colorTemplate.length; i++) {
+            paths.push([]);
+            pathPlayers.push(AcePath.create({
+                parent: 'canvas',
+                fill: colorTemplate[i]
+            }));
+        }
+        var pathFlag = AcePath.create({
+            parent: 'canvas',
+            fill: 'none',
+            stroke: 'white'
+        });
+        var flagPath = [];
+        for (var x = 0; x < boardSize; x++) {
+            for (var y = 0; y < boardSize; y++) {
+                if (x == center[0] && y == center[1]) {
+                    continue;
+                }
+
+                var player = colorPoints[[x, y]];
+                if (typeof player != 'undefined') {
+                    paths[player].push(format(rectTemplate, [x * floorSize, y * floorSize, (x + 1) * floorSize, (y + 1) * floorSize]));
+                    var ellipses = ellipse(x * floorSize + 4, y * floorSize + 4, floorSize - 8, floorSize - 8);
+                    flagPath.push(format(ellipseTemplate, ellipses));
+                }
+            }
+        }
+        pathFlag.attr({
+            'path': flagPath.join(' ')
+        });
+
+        for (var i = 0; i < colorTemplate.length; i++) {
+            pathPlayers[i].attr({
+                path: paths[i].join(' ')
+            });
+        }
+    }();
+
+    /**
+     * 获取飞机的路径
+     * @param point 飞机的坐标
+     * @param player 飞机的方位
+     */
+    function plane(point, player) {
+        var points = [[0.50, 0.00], [0.50, 0.33], [0.50, 0.97], [0.02, 0.66], [0.98, 0.66], [0.33, 0.56], [0.67, 0.56], [0.33, 0.99], [0.67, 0.99], [0.45, 0.11], [0.57, 0.11], [0.44, 0.79], [0.56, 0.79], [0.50, 0.79], [0.50, 0.89], [0.32, 0.27], [0.68, 0.24], [0.50, 0.60]];
+
+        for (var i = 0; i < points.length; i++) {
+            var p = flipPoint(points[i], player, 1);
+            points[i] = [
+                p[0] * floorSize,
+                p[1] * floorSize
+            ];
+            points[i][0] += point[0] * floorSize;
+            points[i][1] += point[1] * floorSize;
+        }
+
+        return format('\
+M#{9} C#{0} #{0} #{10} L#{12} C#{2} #{2} #{11} Z\
+M#{1} L#{4} #{6} #{5} #{3} Z\
+M#{13} L#{8} #{14} #{7} Z\
+M#{5} C#{15} #{15} #{17} Z\
+M#{6} C#{16} #{16} #{17} Z', points);
+    }
+
+    /**
+     * 获取骰子的路径
+     * @param point 坐标
+     * @parma number 数字
+     */
+    function dice(point, number) {
+
+        //var ellipses = ellipse(x * floorSize + 4, y * floorSize + 4, floorSize - 8, floorSize - 8);
+         //   flagPath.push(format(ellipseTemplate, ellipses));
+    }
+
+    /* debug start */
+//* 背景参考坐标
+    var path = [];
+    for (var x = 0; x < boardSize; x++) {
+        for (var y = 0; y < boardSize; y++) {
+            path.push(format(rectTemplate, [x * floorSize, y * floorSize, (x + 1) * floorSize, (y + 1) * floorSize]));
+        }
+    }
+    pathBoard.attr({
+        path: path.join(' ')
+    });
+//*/
+    /* debug end */
+
+    var pathGray = AcePath.create({
+        parent: 'canvas',
+        fill: '#949AA4'
+    });
+
+    var path = [];
+    for (var i = 0; i < playerCount; i++) {
+        path.push(diamond(flipPoint([4, 10], i, boardSize), i));
+    }
+
+    pathGray.attr({
+        path: path.join(' ')
+    });
+
+    var pathPlanes = [];
+    void function() {
+        var colorTemplate = ['#700506', '#8D4B08', '#106E08', '#054D70'];
+        var paths = [];
+        for (var i = 0; i < colorTemplate.length; i++) {
+            pathPlanes.push(AcePath.create({
+                parent: 'canvas',
+                fill: colorTemplate[i],
+                stroke: 'red'
+            }));
+        }
+    }();
+
+    var path = [plane([1, 1], 0)];
+    pathPlanes[0].attr({
+        path: path.join(' ')
+    });
+
+    var pathDice = AcePath.create({
+        parent: 'canvas',
+        fill: '#FF0000'
+    });
+
+    pathDice.attr({
+        path: dice([2, 11], 1)
+    });
+
+    var canvas = document.getElementById('canvas');
+    canvas.onclick = function(e) {
+        e = e || event;
+        var point = [e.layerX || e.offsetX || 0, e.layerY || e.offsetY || 0];
+        point[0] = parseInt(point[0] / floorSize);
+        point[1] = parseInt(point[1] / floorSize);
+        log.value += format('[#{0}, #{1}], ', point);
+    }
+}();
+    </script>
+</body>
+</html>

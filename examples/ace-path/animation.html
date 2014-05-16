@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <meta name="author" content="http//weibo.com/zswang" />
+    <title>Demo</title>
+    <script src="../../scripts/ace-path-data.js"></script>
+    <script src="../../scripts/ace-path-simple.js"></script>
+    <style>
+body, div {
+    padding: 0;
+    margin: 0;
+}
+#canvas1, #canvas2 {
+    ownerflow: hidden;
+    width: 500px;
+    height: 500px;
+    border: solid 1px black;
+    display: inline-block;
+}
+    </style>
+</head>
+<body>
+    <div id="canvas1"></div>
+    <div id="canvas2"></div>
+    <script>
+void function() {
+    var path1 = AcePath.create({
+        parent: 'canvas1',
+        fill: 'none',
+        stroke: 'black'
+    });
+    var path2 = AcePath.create({
+        parent: 'canvas2',
+        fill: 'none',
+        stroke: 'black'
+    });
+
+    var path3 = AcePath.create({
+        parent: 'canvas1',
+        fill: 'none',
+        stroke: 'red'
+    });
+
+    path1.attr({
+        path: 'M 100,100 L 100,300 C 200,200 154,23 12,10 Z'
+    });
+    path2.attr({
+        path: 'M 100,100 C 300,200 254,23 22,10 Z'
+    });
+
+    var curves = AcePathData.alignment(
+        path1.attr('path'),
+        path2.attr('path')
+    );
+
+    var count = 2000;
+    setInterval(function() {
+        var t = (+new Date() % count) / count;
+        var curve = [];
+        for (var i = 0; i < curves[0].length; i++) {
+            var item1 = curves[0][i];
+            var item2 = curves[1][i];
+            console.log(item1, item2);
+            var item3 = [item1[0]];
+            item3[1] = [];
+            for (var j = 0; j < item1[1].length; j++) {
+                item3[1].push([
+                    item1[1][j][0] + t * (item2[1][j][0] - item1[1][j][0]),
+                    item1[1][j][1] + t * (item2[1][j][1] - item1[1][j][1])
+                ]);
+            }
+            curve[i] = item3;
+        }
+        path3.attr('path', AcePathData.stringify(curve))
+    }, 100);
+}();
+    </script>
+</body>
+</html>
