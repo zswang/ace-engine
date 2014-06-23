@@ -121,6 +121,7 @@ void function(exports){
         }
         return [ra, rb];
     }
+
     /**
      * 旋转一个点坐标
      * @param {Array} point 目标坐标
@@ -185,6 +186,12 @@ void function(exports){
         }
     }
 
+    /**
+     * 计算点到多边形的距离
+     * @param {Array[Number,Number]} point 
+     * @param {Array[Array[Number,Number]]} polyline
+     * @return Number 返回距离
+     */
     function pointToPolyline(point, polyline){
         if (!point || !polyline || !polyline.length) return;
         var result = pointToPoint(point, polyline[0]);
