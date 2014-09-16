@@ -124,10 +124,17 @@ void function(exports){
      * @param {Object} json 数据项
      */
     function format(template, json){
+        if (typeof template === 'function') { // 函数多行注释处理
+            template = String(template).replace(
+                /^[^\{]*\{\s*\/\*!?[ \f\t\v]*\n?|[ \f\t\v]*\*\/[;|\s]*\}$/g, // 替换掉函数前后部分
+                ''
+            );
+        }
         return template.replace(/#\{(.*?)\}/g, function(all, key){
             return json && (key in json) ? json[key] : "";
         });
     }
+
     /*
      * html编码转换字典
      */
