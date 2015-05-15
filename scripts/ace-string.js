@@ -1,5 +1,6 @@
-var AceString = /^u/.test(typeof exports) ? AceString || {} : exports;
-void function(exports){
+var AceString = typeof exports === 'undefined' ? AceString || {} : exports;
+
+(function(exports) {
     /**
      * Ace Engine String
      * 字符串编码处理
@@ -9,16 +10,21 @@ void function(exports){
      * @copyright www.baidu.com
      */
     var b64;
+
     /**
-     * 对字符串进行base64编码
-     * param{string} str 原始字符串
+     * 对字符串进行 base64 编码
+     *
+     * param {string} str 原始字符串
      */
     function encodeBase64(str) {
         if (!str) return;
-        if (!b64){
+        if (!b64) {
             b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
         }
-        var inputs = {}, outputs = {}, bits, i = 0, result = [];
+        var inputs = {},
+            outputs = {},
+            bits, i = 0,
+            result = [];
         str = encodeUTF8(str);
         do {
             inputs[0] = str.charCodeAt(i++);
@@ -44,13 +50,18 @@ void function(exports){
         } while (i < str.length);
         return result.join('');
     }
+
     /**
-     * 对base64字符串进行解码
-     * @param {String} str 编码字符串
+     * 对 base64 字符串进行解码
+     *
+     * @param {string} str 编码字符串
      */
     function decodeBase64(str) {
         if (!str) return;
-        var inputs = {}, outputs = {}, bits, i = 0, result = [];
+        var inputs = {},
+            outputs = {},
+            bits, i = 0,
+            result = [];
 
         do {
             inputs[0] = b64.indexOf(str.charAt(i++));
@@ -66,9 +77,11 @@ void function(exports){
 
             if (inputs[2] == 64) {
                 result.push(String.fromCharCode(outputs[0]));
-            } else if (inputs[3] == 64) {
+            }
+            else if (inputs[3] == 64) {
                 result.push(String.fromCharCode(outputs[0], outputs[1]));
-            } else {
+            }
+            else {
                 result.push(String.fromCharCode(outputs[0], outputs[1], outputs[2]));
             }
         } while (i < str.length);
@@ -80,7 +93,9 @@ void function(exports){
      * param{string} str 原始字符串
      */
     function encodeUTF8(str) {
-        if (!str) return;
+        if (!str) {
+            return str;
+        }
         return String(str).replace(
             /[\u0080-\u07ff]/g,
             function(c) {
@@ -101,7 +116,9 @@ void function(exports){
      * @param {String} str 编码字符串
      */
     function decodeUTF8(str) {
-        if (!str) return;
+        if (!str) {
+            return str;
+        }
         return String(str).replace(
             /[\u00c0-\u00df][\u0080-\u00bf]/g,
             function(c) {
@@ -117,20 +134,21 @@ void function(exports){
         );
         return str;
     }
-    
+
     /**
      * 格式化函数
-     * @param {String} template 模板
-     * @param {Object} json 数据项
+     *
+     * @param {string} template 模板
+     * @param {object} json 数据项
      */
-    function format(template, json){
+    function format(template, json) {
         if (typeof template === 'function') { // 函数多行注释处理
             template = String(template).replace(
-                /^[^\{]*\{\s*\/\*!?[ \f\t\v]*\n?|[ \f\t\v]*\*\/[;|\s]*\}$/g, // 替换掉函数前后部分
+                /[^]*\/\*!?\s*|\s*\*\/[^]*/g, // 替换掉函数前后部分
                 ''
             );
         }
-        return template.replace(/#\{(.*?)\}/g, function(all, key){
+        return template.replace(/#\{(.*?)\}/g, function(all, key) {
             return json && (key in json) ? json[key] : "";
         });
     }
@@ -139,11 +157,13 @@ void function(exports){
      * html编码转换字典
      */
     var htmlDecodeDict, htmlEncodeDict;
+
     /**
      * HTML解码
-     * @param {String} html
+     *
+     * @param {string} html
      */
-    function decodeHTML(html){
+    function decodeHTML(html) {
         htmlDecodeDict || (htmlDecodeDict = {
             'quot': '"',
             'lt': '<',
@@ -152,20 +172,21 @@ void function(exports){
             'nbsp': ' '
         });
         return String(html).replace(
-            /&((quot|lt|gt|amp|nbsp)|#x([a-f\d]+)|#(\d+));/ig, 
-            function(all, group, key, hex, dec){
+            /&((quot|lt|gt|amp|nbsp)|#x([a-f\d]+)|#(\d+));/ig,
+            function(all, group, key, hex, dec) {
                 return key ? htmlDecodeDict[key.toLowerCase()] :
-                    hex ? String.fromCharCode(parseInt(hex, 16)) : 
+                    hex ? String.fromCharCode(parseInt(hex, 16)) :
                     String.fromCharCode(+dec);
             }
         );
     }
-    
+
     /**
      * HTML编码
-     * @param {String} text 
+     *
+     * @param {string} text
      */
-    function encodeHTML(text){
+    function encodeHTML(text) {
         htmlEncodeDict || (htmlEncodeDict = {
             '"': 'quot',
             '<': 'lt',
@@ -173,7 +194,7 @@ void function(exports){
             '&': 'amp',
             ' ': 'nbsp'
         });
-        return String(text).replace(/["<>& ]/g, function(all){
+        return String(text).replace(/["<>& ]/g, function(all) {
             return "&" + htmlEncodeDict[all] + ";";
         });
     }
@@ -188,7 +209,7 @@ void function(exports){
             return String.fromCharCode(+dec);
         });
     }
-    
+
     function encodeHTML(text){
         var pre = document.createElement('pre');
         pre.appendChild(document.createTextNode(text));
@@ -197,20 +218,27 @@ void function(exports){
     */
 
     var crc32dict;
-    function crc32(str){
+
+    /**
+     * 计算字符串 CRC32 的值
+     *
+     * @param {string} str [description]
+     * @return {string}     [description]
+     */
+    function crc32(str) {
         var i, j, k;
-        if (!crc32dict){
+        if (!crc32dict) {
             crc32dict = [];
             for (i = 0; i < 256; i++) {
                 k = i;
                 for (j = 8; j--;)
-                    if (k & 1) 
+                    if (k & 1)
                         k = (k >>> 1) ^ 0xedb88320;
                     else k >>>= 1;
                 crc32dict[i] = k;
             }
         }
-        
+
         str = encodeUTF8(str);
         k = -1;
         for (i = 0; i < str.length; i++) {
@@ -218,21 +246,37 @@ void function(exports){
         }
         return -1 ^ k;
     }
-    
-    function encodeUnicode(str){
-        if (!str) return;
-        return String(str).replace(/[^\x00-\xff\uFEFF]/g, function(all){
-            return escape(all).replace(/%u(....)/i, "\\u$1");
+
+    /**
+     * 对字符串进行 Unicode 编码
+     *
+     * @param {string} str 源字符串
+     * @return {string} 返回编码后的内容
+     */
+    function encodeUnicode(str) {
+        if (!str) {
+            return str;
+        }
+        return String(str).replace(/[^\x09-\x7f\ufeff]/g, function(all) {
+            return '\\u' + (0x10000 + all.charCodeAt()).toString(16).substring(1);
         });
     }
 
-    function decodeUnicode(str){
-        if (!str) return;
-        return String(str).replace(/\\u([\da-f]{4})|\\x([\da-f]{2})/ig, function(all, $1, $2){
+    /**
+     * 字符串 Unicode 解码
+     *
+     * @param {string} str 源字符串
+     * @return {string} 返回解码后的内容
+     */
+    function decodeUnicode(str) {
+        if (!str) {
+            return str;
+        }
+        return String(str).replace(/\\u([\da-f]{4})|\\x([\da-f]{2})/ig, function(all, $1, $2) {
             return String.fromCharCode(parseInt($1 || $2, 16));
         });
     }
-    
+
     exports.base64 = {
         encode: encodeBase64,
         decode: decodeBase64
@@ -241,7 +285,7 @@ void function(exports){
         encode: encodeUTF8,
         decode: decodeUTF8
     };
-    
+
     exports.format = format;
     exports.html = {
         encode: encodeHTML,
@@ -252,7 +296,7 @@ void function(exports){
         decode: decodeUnicode
     };
     exports.crc32 = crc32;
-}(AceString);
+})(AceString);
 
 /*
 console.log(AceString.base64.decode(AceString.base64.encode('english 中文')));
